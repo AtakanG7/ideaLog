@@ -1,19 +1,13 @@
-const express = require('express');
-const app = express();
-const port = 3000;
+// YOUR_BASE_DIRECTORY/netlify/functions/
 
-// Set EJS as the view engine
-app.set('view engine', 'ejs');
+import express, { Router } from "express";
+import serverless from "serverless-http";
 
-app.use(express.static('public'))
+const api = express();
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }))
+const router = Router();
+router.get("/hello", (req, res) => res.send("Hello World!"));
 
-app.get('/', (req, res) => {
-    res.render('pages/index')
-})
+api.use("/api/", router);
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}/`);
-});
+export const handler = serverless(api);
