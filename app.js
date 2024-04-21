@@ -1,13 +1,13 @@
-// YOUR_BASE_DIRECTORY/netlify/functions/
+const express = require("express");
+const app = express();
+const port = process.env.PORT || 3001;
 
-const express = require('express');
-const Router = express.Router;
+app.get("/", (req, res) => res.render("index"));
 
-const api = express();
+// Set EJS as the view engine
+app.set('view engine', 'ejs');
 
-const router = Router();
-router.get("/hello", (req, res) => res.send("Hello World!"));
+const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
-api.use("/api/", router);
-
-const handler = serverless(api);
+server.keepAliveTimeout = 120 * 1000;
+server.headersTimeout = 120 * 1000;
