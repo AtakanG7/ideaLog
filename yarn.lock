@@ -206,6 +206,11 @@ express@^4.18.2:
     utils-merge "1.0.1"
     vary "~1.1.2"
 
+fauna@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.npmjs.org/fauna/-/fauna-1.3.1.tgz"
+  integrity sha512-A4JEj5v2KyOfjlze1Wb/fAWRxDfoGr61PhMvjV5jcfkLJ2ouzchsCXbzqzANetj8g/O/jth3wO2s02d6+ePuyQ==
+
 filelist@^1.0.4:
   version "1.0.4"
   resolved "https://registry.npmjs.org/filelist/-/filelist-1.0.4.tgz"

@@ -29,6 +29,13 @@
       font-size: 1.1rem;
       line-height: 1.8;
     }
+    .sidebar-post {
+      padding: 10px 0;
+      border-bottom: 1px solid #ddd;
+    }
+    .sidebar-post:last-child {
+      border-bottom: none;
+    }
   </style>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -41,32 +48,50 @@
         <a class="navbar-brand" href="#">My Blog</a>
       </div>
       <ul class="nav navbar-nav">
-        <li><a href="/">Home</a></li>
-        <li><a href="/about">About</a></li>
-        <li><a href="/blogs">Blog</a></li>
-        <li><a href="/contact">Contact</a></li>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Contact</a></li>
       </ul>
     </div>
   </nav>
 
   <div class="container">
     <ol class="breadcrumb">
-      <li><a href="/">Home</a></li>
-      <li><a href="/blogs">Blog</a></li>
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Blog</a></li>
       <li class="active">Welcome Post</li>
     </ol>
 
-    <div class="jumbotron text-center">
-      <h1 class="post-title">Welcome to My Blog</h1>
-      <p class="lead">Explore the world through my lens</p>
-    </div>
     <div class="row">
-      <div class="col-md-10 col-md-offset-1">
+      <div class="col-md-8">
+        <div class="jumbotron text-center">
+          <h1 class="post-title">Welcome to My Blog</h1>
+          <p class="lead">Explore the world through my lens</p>
+        </div>
         <div class="post-meta">
           Posted on April 21, 2024 by Atakan Gül
         </div>
         <div class="post-content">
           <!-- Your blog post content goes here -->
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="sidebar">
+          <h3>Recent Posts</h3>
+          <div class="sidebar-post">
+            <h4><a href="#">Post Title 1</a></h4>
+            <p>Brief description of the post...</p>
+          </div>
+          <div class="sidebar-post">
+            <h4><a href="#">Post Title 2</a></h4>
+            <p>Brief description of the post...</p>
+          </div>
+          <div class="sidebar-post">
+            <h4><a href="#">Post Title 3</a></h4>
+            <p>Brief description of the post...</p>
+          </div>
+          <!-- Add more sidebar post entries here -->
         </div>
       </div>
     </div>
