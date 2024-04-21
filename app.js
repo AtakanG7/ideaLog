@@ -1,7 +1,7 @@
 // YOUR_BASE_DIRECTORY/netlify/functions/
 
-import express, { Router } from "express";
-import serverless from "serverless-http";
+const express = require('express');
+const Router = express.Router;
 
 const api = express();
 
@@ -10,4 +10,4 @@ router.get("/hello", (req, res) => res.send("Hello World!"));
 
 api.use("/api/", router);
 
-export const handler = serverless(api);
+const handler = serverless(api);
