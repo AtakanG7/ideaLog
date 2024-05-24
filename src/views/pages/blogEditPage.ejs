@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" type="text/css" href="src/js/jquery.notebook.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <title>Blog Post Güncelle</title>
+</head>
+<body>
+    <div class="container my-5">
+        <h1 class="mb-4">Blog Post Güncelle</h1>
+        <form action="/create-blog" method="POST" enctype="multipart/form-data">
+            <!-- Blog Editor -->
+            <div class="blog-editor d-flex flex-column" contenteditable="true"></div>
+            <div class="my-editor"></div>
+            <button type="submit" class="btn btn-primary mt-3">Create Blog Post</button>
+        </form>
+    </div>
+
+    <div class="block-selection" style="display: none;"></div>
+    <script type="text/javascript" src="src/js/libs/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="src/js/jquery.notebook.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
+
+    <script>
+        $(document).ready(function(){
+            $('.blog-editor').notebook();
+        });
+        $(document).ready(function() {
+            var editor = $('.blog-editor');
+            var blockSelection = $('.block-selection');
+            var currentSelection = null;
+
+            // Load content from localStorage on page load
+            var storedContent = localStorage.getItem('blogContent');
+            if (storedContent) {
+                editor.html(storedContent);
+            }
+
+            // Save content to localStorage when the page is unloaded
+            $(window).on('beforeunload', function() {
+                var content = editor.html();
+                localStorage.setItem('blogContent', content);
+            });
+
+            // Show initial message
+            editor.html('<div class="placeholder">Merhaba, lütfen / yazarak bir blok ekleyiniz.</div>');
+
+            // Function to add block
+            function addBlock(type, content = '') {
+                var block = $('<div class="block d-flex flex-column" tabindex="0"></div>');
+                var input;
+                var actions = $('<div class="block-actions mt-2"></div>');
+                var deleteBtn = $('<button class="btn btn-sm btn-danger">Delete</button>');
+                var blockHandle = $('<div class="block-handle"><i class="fas fa-arrows-alt"></i></div>');
+
+                switch (type) {
+                    case 'text':
+                        input = $('<div class="form-control" contenteditable="true"></div>');
+                        input.text(content || 'Enter text here...');
+                        break;
+                    case 'code':
+                        input = $('<pre class="form-control code-block" contenteditable="true"></pre>');
+                        input.text(content || 'Enter code here...');
+                        break;
+                    case 'image':
+                        input = $('<div class="input-group"><div class="custom-file"><input type="file" name="image" class="custom-file-input" id="inputGroupFile"><label class="custom-file-label" for="inputGroupFile">Choose file</label></div></div>');
+                        break;
+                }
+
+                deleteBtn.click(function() {
+                    block.remove();
+                });
+
+                actions.append(blockHandle, deleteBtn);
+                block.append(input, actions);
+
+                if (currentSelection && currentSelection.length > 0) {
+                    currentSelection.replaceWith(block);
+                } else {
+                    editor.append(block);
+                }
+
+                currentSelection = null;
+                makeBlocksSortable();
+                adjustCodeBlockHeight();
+            }
+
+            // Make blocks sortable
+            function makeBlocksSortable() {
+                try {
+                    $('.blog-editor').sortable({
+                        handle: '.block-handle',
+                        update: function(event, ui) {
+                            // Update block order based on the new position
+                            // You can add code here to update the server-side data if needed
+                        }
+                    });
+                } catch (err) {
+                    console.log('Something wrong with making blocks sortable. Fixing...');
+                    $('.blog-editor').sortable('destroy');
+                    makeBlocksSortable();
+                }
+            }
+
+            // Adjust code block height
+            function adjustCodeBlockHeight() {
+                $('.code-block').each(function() {
+                    $(this).height($(this)[0].scrollHeight);
+                });
+            }
+
+            // Handle "/" keypress
+            editor.on('keyup', function(e) {
+                if (e.key === '/') {
+                    e.preventDefault();
+                    var selection = window.getSelection();
+                    var range = selection.getRangeAt(0);
+                    var blockTypes = ['text', 'code', 'image'];
+                    var selectionRect = range.getBoundingClientRect();
+                    var selectionX = selectionRect.left + selectionRect.width / 2;
+                    var selectionY = selectionRect.top + selectionRect.height + window.pageYOffset;
+
+                    // Remove any existing selections
+                    selection.removeAllRanges();
+
+                    blockSelection.empty();
+                    blockTypes.forEach(function(type) {
+                        var option = $('<div class="block-option">' + type + '</div>');
+                        option.click(function() {
+                            addBlock(type);
+                            blockSelection.hide();
+                        });
+                        blockSelection.append(option);
+                    });
+
+                    blockSelection.css({
+                        left: selectionX + 'px',
+                        top: selectionY + 'px',
+                        display: 'block'
+                    });
+                }
+            });
+
+            // Hide block selection when clicking outside
+            $(document).click(function(e) {
+                if (!blockSelection.is(e.target) && blockSelection.has(e.target).length === 0) {
+                    blockSelection.hide();
+                }
+            });
+
+            // Handle placeholder visibility
+            editor.on('click', function() {
+                $('.placeholder').hide();
+            });
+
+            makeBlocksSortable();
+            adjustCodeBlockHeight();
+        });
+    </script>
+</body>
+</html>
