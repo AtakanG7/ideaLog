@@ -1,47 +1,21 @@
 import { Router } from "express";
+import {Blogs} from "../models/blogs.js";
 import passport  from "passport";
 import AuthController from "../controllers/authControllers/authController.js";
-import {Blogs} from "../models/blogs.js";
 const authController = new AuthController();
-
+import { blogController } from "../controllers/blogController.js";
+import { userController } from "../controllers/userController.js";
 // Using express router, creating specific routes
 const router = Router()
 
 // Route to render index.ejs
-router.get("/", async (req, res) => {
-    let perPage = 10;
-    let page = req.query.page || 1;
-
-    const data = await Blogs.aggregate([ { $sort: { createdAt: -1 } } ])
-    .skip(perPage * page - perPage)
-    .limit(perPage)
-    .exec();
-
-    // Count is deprecated - please use countDocuments
-    // const count = await Post.count();
-    const count = await Blogs.countDocuments({});
-    const nextPage = parseInt(page) + 1;
-    const hasNextPage = nextPage <= Math.ceil(count / perPage);
-
-    res.render('./pages/indexPage', { 
-      data,
-      current: page,
-      nextPage: hasNextPage ? nextPage : null,
-      currentRoute: '/'
-    });
-});
+router.get("/", blogController.getPublishedBlogs);
 
 // Route to render login.ejs
-router.get('/login', function (req, res) {
-    // Renders login.ejs file in views folder
-    res.render('./pages/loginPage', { currentRoute: '/login' })
-})
+router.get('/login', function (req, res) {res.render('./pages/loginPage', { currentRoute: '/login' })})
 
 // Route to render signup.ejs
-router.get('/signup', function (req, res) {
-    // Renders signup.ejs file in views folder
-    res.render('./pages/signupPage', { currentRoute: '/signup' })
-})
+router.get('/signup', function (req, res) {res.render('./pages/signupPage', { currentRoute: '/signup' })})
 
 // login logic to validate req.body.user 
 router.post('/login', function (req, res, next) {
@@ -59,9 +33,7 @@ router.get('/signup/verification/:verificationToken', function (req, res) {
 })
 
 // Google OAuth2 routes
-router.get('/auth/google',
-  passport.authenticate('google', { scope : ['profile', 'email'] })
-);
+router.get('/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
 
 router.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login' }),
@@ -74,5 +46,13 @@ router.get('/auth/google/callback',
 router.get('/logout', function (req, res, next) {
     authController.loginController.logout(req, res, next)
 })
+
+router.post("/users/subscribe", userController.subscribeToNewsletter);
+
+router.get("/users/unsubscribe", (req, res) => {
+    res.render("./pages/unsubscribePage", { currentRoute: `/unsubscribe` })
+});
+
+router.post("/users/unsubscribe", userController.unsubcribeFromNewsletter);
 
 export default router;

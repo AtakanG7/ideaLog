@@ -1,14 +1,15 @@
-import client from "../../../config/redis.js";
+import client from "../../../apis/redis.js";
 import bcrypt from "bcrypt"
 import Config from "../../../config/config.js";
 import generator from "generate-password";
-import { sendEmail } from "../../../config/mail.js";
-import { sendTelegramMessage } from "../../../config/telegram.js";
-
+import { sendEmail } from "../../../apis/mail.js";
+import { sendTelegramMessage } from "../../../apis/telegram.js";
+import authControllerMiddlewares from "./authControllerMiddlewares.js";
 const keyValt = new Config();
 
 import { Users } from "../../models/users.js";
 
+const authControllerMiddleware = new authControllerMiddlewares();
 class signupController {
     async signup(req, res) {
         try {
@@ -25,13 +26,6 @@ class signupController {
                 return res.status(400).json({ error: 'Invalid email address' });
             }
     
-            // Check if the password is valid and proper format
-            const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-            if (!passwordRegex.test(req.body.password)) {
-                console.log('Invalid password');
-                return res.status(400).json({ error: 'Password must contain minimum eight characters, at least one letter and one number' });
-            }
-    
             // Hash the password
             const hashedPassword = await bcrypt.hash(req.body.password, 10);
             const user = new Users({
@@ -44,7 +38,7 @@ class signupController {
             await user.save();
     
             // Create a new session for the user
-            await createSession(req, res);
+            await authControllerMiddleware.createSession(req, res);
     
             // Generate a verification code
             var verificationToken = generator.generate({

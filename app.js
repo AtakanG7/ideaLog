@@ -5,16 +5,15 @@ import express from "express";
 import path from "path";
 import passport from "passport";
 import GoogleStrategy from 'passport-google-oauth20';
-import redis from "./config/redis.js";
-import mongoose from "./config/db.js";
-import { sendTelegramMessage } from "./config/telegram.js";
+import redis from "./apis/redis.js";
+import mongoose from "./apis/db.js";
+import { sendTelegramMessage } from "./apis/telegram.js";
 // Importing routers
 import index from "./src/routes/indexRouter.js";
 import blogPage from "./src/routes/blogRouter.js";
 import bodyParser from "body-parser";
 import expressEjsLayouts from "express-ejs-layouts";
 import { isActiveRoute } from './src/helpers/routeHelpers.js';
-
 // Getting config values
 const keyValt = new Config();
 
@@ -71,7 +70,6 @@ app.use(expressEjsLayouts);
 // Setting up static files directory
 app.use(express.static('public'));
 
-// Using bodyParser.json middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 

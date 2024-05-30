@@ -1,0 +1,14 @@
+/* styles.css */
+@tailwind base;
+
+/* Import the Tailwind Typography styles */
+@import "tailwindcss/typography.css";
+
+@tailwind components;
+
+@import 'daisyui';
+
+@tailwind utilities;
+
+/* Import Tw Elements styles */
+@import 'tw-elements/dist/css/index.css';

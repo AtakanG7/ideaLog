@@ -1,9 +1,9 @@
 
-import client from "../../../config/redis.js";
+import client from "../../../apis/redis.js";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from 'uuid';
 import Config from "../../../config/config.js";
-import { sendTelegramMessage } from "../../../config/telegram.js";
+import { sendTelegramMessage } from "../../../apis/telegram.js";
 
 const keyValt = new Config();
 

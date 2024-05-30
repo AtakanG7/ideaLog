@@ -1,0 +1,38 @@
+@import "tailwindcss/typography.css";
+
+@tailwind utilities;
+
+.search-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .search-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+  
+  .search-toggle img {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .search-bar {
+    display: none;
+    margin-left: 10px;
+  }
+  
+  .search-bar input {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .search-bar.visible {
+    display: block;
+  }

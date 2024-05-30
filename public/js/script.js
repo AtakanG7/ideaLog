@@ -20,5 +20,22 @@ document.addEventListener('DOMContentLoaded', function(){
       this.setAttribute('aria-expanded', 'false');
     });
   
-  
-  });
+    window.addEventListener('scroll', function() {
+      const topElement = document.querySelector('.top');
+      if (topElement) {
+        if (window.pageYOffset > 100) {
+          topElement.classList.add('show');
+        } else {
+          topElement.classList.remove('show');
+        }
+      }
+    });
+});
+
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'light' ? 'dim' : 'light';
+
+  document.documentElement.setAttribute('data-theme', newTheme);
+}

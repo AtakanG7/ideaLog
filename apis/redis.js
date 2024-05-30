@@ -4,7 +4,7 @@
 
 // Importing the necessary dependencies
 import { createClient } from 'redis'; // Redis client library
-import Config from './config.js'; // Configuration file
+import Config from '../config/config.js'; // Configuration file
 
 // Initializing the configuration file
 const keyValt = new Config();

@@ -1,7 +1,7 @@
 
 import bcrypt from "bcrypt"
 import { Users } from "../../models/users.js";
-import { sendTelegramMessage } from "../../../config/telegram.js";
+import { sendTelegramMessage } from "../../../apis/telegram.js";
 import authControllerMiddlewares from "./authControllerMiddlewares.js";
 
 const authControllerMiddleware = new authControllerMiddlewares();
