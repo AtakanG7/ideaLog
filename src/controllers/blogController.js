@@ -1,6 +1,9 @@
 import { Blogs } from "../models/blogs.js";
-import { fetchLatestTechNews, generateBlogPost, startAIPostCreation } from "../../apis/llm.js";
-
+import { Users } from "../models/users.js";
+import { sendTelegramMessage } from "../../apis/telegram.js";
+import { startAIPostCreation } from "../../apis/llm.js";
+import AuthController from "../controllers/authControllers/authController.js";
+const authController = new AuthController();
 /**
  * Controller for managing blog-related operations
  */
@@ -100,22 +103,36 @@ export const  blogController = {
     },
     
     createAIGeneratedBlogs: async (req, res) => {
-        const content = await startAIPostCreation()
-        console.log(content)
-        // Save the ai post to the database
-        const blog = new Blogs({ 
-            title: "First AI generated blog post",
-            description: "I will not delete this blog post ı want it to be public. AHAHAHA",
-            content: content,
-            authorName: "AItakan",
-            author: "66455700e6482791a4404afe", // AItakan's special id :)
-            createdAt: Date.now(),
-            publisedAt: Date.now(),
-            category: "technology",
-            status: "published"
-         });
-        await blog.save();
-        res.redirect("/blogs/blog/" + blog._id);
-    }
+        try {
+            sendTelegramMessage(`[INFO] Starting ai blog creation...`);
+            
+            // Get blog post required metadata minus authorMetadata
+            const blogPostRequiredMetadata = await startAIPostCreation(req.query.q)
+            
+            // Get author metadata
+            const authorMetadata = await Users.findById(req.params.id)
+            
+            // Save the ai post to the database
+            const blog = new Blogs({
+                ...blogPostRequiredMetadata,
+                authorMetadata: authorMetadata,
+                status: 'published',
+            });
+
+            await blog.save();
+
+            res.status(200).json({
+                success: true,
+                message: "Blog post created successfully",
+                data: blog
+            });
+        } catch (error) {
+            sendTelegramMessage(`[Error] During ai blog creation:  ${error.message}`);
+            res.status(500).json({
+                success: false,
+                message: error.message
+            });
+        }
+    },
 }
 

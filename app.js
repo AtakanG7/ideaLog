@@ -13,7 +13,8 @@ import index from "./src/routes/indexRouter.js";
 import blogPage from "./src/routes/blogRouter.js";
 import bodyParser from "body-parser";
 import expressEjsLayouts from "express-ejs-layouts";
-import { isActiveRoute } from './src/helpers/routeHelpers.js';
+import { isActiveRoute, setUserRole } from './src/helpers/routeHelpers.js';
+
 // Getting config values
 const keyValt = new Config();
 
@@ -23,7 +24,7 @@ const port = keyValt.PORT || 5000;
 // Creating the application
 const app = express();
 
-app.locals.isActiveRoute = isActiveRoute;
+app.use(setUserRole);
 
 // Setting up session middleware
 app.use(session({
@@ -61,6 +62,7 @@ passport.use(new GoogleStrategy({
 
 // Setting up view engine and views directory
 app.set('view engine', 'ejs');
+
 // Setting up views directory
 app.set('views', path.join(process.cwd(), 'src', 'views'));
 
@@ -76,6 +78,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // Connecting routers to the application
 app.use('/', index)
 app.use('/blogs', blogPage)
+
 
 // Starting the server
 const server = app.listen(port, () => console.log(`Listening on ${port}!`));

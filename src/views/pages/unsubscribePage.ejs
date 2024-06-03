@@ -16,6 +16,13 @@
     </style>
 </head>
 <body>
+    <% if (isAdmin) { %>  
+    <%- include('../partials/headers/headerAdmin.ejs') %>
+    <% } else if (isAuthenticated) { %>
+    <%- include('../partials/headers/headerAuth.ejs') %>
+    <% } else { %>
+    <%- include('../partials/headers/headerUnAuth.ejs') %>
+    <% } %>
     <div class="container">
         <div class="row justify-content-center align-items-center" style="height: 100vh;">
             <div class="col-12 col-md-8 col-lg-6">

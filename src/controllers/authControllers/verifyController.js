@@ -33,7 +33,7 @@ class verifyController{
              * by using the uuid from the token.
              */
             if (req.headers.cookie && req.headers.cookie.includes('authToken=')) {
-                const token = req.headers.cookie.split('authToken=')[1];
+                const token = req.headers.cookie.split('=')[1];
                 const decoded = jwt.verify(token, keyValt.SECRET_KEY);
                 if (decoded.uuid) {
                     // Get the user id from redis

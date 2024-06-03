@@ -12,13 +12,6 @@
     z-index: 9999;
   }
 
-  .searchBar .container {
-    background-color: #fff;
-    padding: 2rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  }
-
   .searchBar .search__form {
     display: flex;
     align-items: center;
@@ -33,26 +26,82 @@
   }
 
   .searchBar #searchClose {
-    margin-left: 1rem;
-    padding: 0.5rem 1rem;
-    background-color: #dc3545;
-    color: #fff;
-    border-radius: 0.25rem;
+    content: 'x';
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
+    top: 40px;
+    right: 30px;
+    background: rgb(255, 0, 0)000;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    line-height: 20px;
+    text-align: center;
+    border: 1px solid #000000;
+    font-size: 20px;
   }
 </style>
 
 <div id="seacrhBar" class="searchBar" style="display: none;">
-  <div class="container">
-    <form action="/blogs/search" method="POST" class="search__form" role="search">
-      <input
+  <div class="container m-0 p-5">
+    <label class="input input-bordered flex items-center gap-2">
+      <input onkeydown="event.key === 'Enter' && fetchArticales()"
+        class="w-100 grow"
         type="search"
         aria-label="Search"
         id="searchInput"
         name="searchTerm"
-        placeholder="Search on the site..."
-      />
-    </form>
-    <div id="searchClose">Close</div>
+        placeholder="Search on the site..." />
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4 opacity-70"><path fill-rule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clip-rule="evenodd" /></svg>
+    </label>
+    <div id="searchClose">X</div>
+    <div id="searchBar" class="content flex w-100 h-100">
+
+    </div>
   </div>
 </div>
+
+<script>
+
+  const searchBar = document.getElementById('seacrhBar');
+  const searchInput = document.getElementById('searchInput');
+  const searchClose = document.getElementById('searchClose');
+  const searchTerm = document.getElementsByName('searchTerm')[0];
+  let sent = false;
+  // Check the input value in some period when user is typing if is changing less than 1 second per letter then fetch the articales
+  // Make sure its not fired multiple times when user is typing
+  searchInput.addEventListener('input',async () => {
+    if (searchInput.value.length > 0 && !sent) 
+      {
+        const timer = setTimeout(() => {
+          sent = true
+          console.log('sent')
+          fetchArticales();
+        }, 1000);
+        clearTimeout(timer);
+    }
+  }); 
+
+
+  // Fetch the articales by fetching server with the values
+  async function fetchArticales() {
+    const response = await fetch('/blogs/search?search=' + decodeURI(searchInput.value));
+    const data = await response.json();
+    sent = false;
+    // display the results in the content div
+    document.getElementById('searchBar').style.display = 'block';
+    const content = document.getElementsByClassName('content')[0];
+    content.innerHTML = '';
+    data.forEach((article) => {
+      content.innerHTML += `<a href="/blogs/blog/${article._id}" class="text-sm text-blue-600 hover:text-blue-700 hover:underline">${article.title}</a><br/>`;
+    });
+    searchClose.addEventListener('click', () => {
+      searchBar.style.display = 'none';
+    })
+  }
+
+
+</script>

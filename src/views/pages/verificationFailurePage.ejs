@@ -24,6 +24,13 @@
     </style>
 </head>
 <body>
+    <% if (isAdmin) { %>  
+    <%- include('../partials/headers/headerAdmin.ejs') %>
+    <% } else if (isAuthenticated) { %>
+    <%- include('../partials/headers/headerAuth.ejs') %>
+    <% } else { %>
+    <%- include('../partials/headers/headerUnAuth.ejs') %>
+    <% } %>
     <div class="container">
         <h1><%= message %></h1>
         <p>Kodu yeniden göndermek için <a href="/signup/verification/reset">tıklayın</a>.</p>

@@ -2,8 +2,8 @@
 
 <%- include('../search.ejs') %>
 
-
-<div class="navbar bg-base-100 pt-3 px-3">
+<div class="navbar bg-base-100 pt-3 px-3" style="position: sticky;
+top: 0px;">
   <div class="navbar-start">
     <div class="nav gap-2">
       <div class="dropdown">
@@ -19,6 +19,7 @@
           </div>
           <li><a href="/portfolio.atakangul.com">Portfolio</a></li>
           <li><a href="/about">About</a></li>
+          <li><a href="/logout">Log out</a></li>
           <li class="my-1">
             <label class="swap swap-rotate">
     
@@ -36,7 +37,7 @@
         </ul>
       </div>
         <button class="btn btn-outline btn-ghost">
-          <a href="/blogs/new/blog/create" class="flex items-center text-xl w-100 h-100">
+          <a href="/blogs/create" class="flex items-center text-xl w-100 h-100">
             <i class="fa fa-plus"></i>
           </a>
         </button>

@@ -9,12 +9,13 @@ class loginController {
     
     async logout(req, res, next) {
         try {
-            // Destroy the session and clear the cookies
             req.session.destroy((err) => {
-                if (err) return next(err);
-                res.session.isAuthenticated = false;
+                if (err) {
+                    sendTelegramMessage(`[Error] ${err.message}`);
+                    return next(err);
+                }
                 res.clearCookie('authToken');
-                res.status(200).json({ message: 'Logout successful' });
+                res.status(200).redirect('/login');
             });
         } catch (err) {
             sendTelegramMessage(`[Error] ${err.message}`);
@@ -37,7 +38,9 @@ class loginController {
                 }
             });
             await authControllerMiddleware.createSession(req, res, user);
-    
+            
+            // Send a success message
+            res.status(200).redirect('/');
         } catch (err) {
             sendTelegramMessage(`[Error] ${err.message}`);
             res.status(500).json({ message: 'Internal server error' ,error: err.message });

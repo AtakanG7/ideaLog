@@ -7,6 +7,14 @@
   <title>Failure</title>
 </head>
 <body>
+  <% if (isAdmin) { %>  
+    <%- include('../partials/headers/headerAdmin.ejs') %>
+  <% } else if (isAuthenticated) { %>
+    <%- include('../partials/headers/headerAuth.ejs') %>
+  <% } else { %>
+    <%- include('../partials/headers/headerUnAuth.ejs') %>
+  <% } %>
+  
   <div class="container mx-auto my-20">
     <div class="alert alert-error shadow-lg">
       <div>

@@ -1,10 +1,11 @@
 import { Router } from "express";
-import {Blogs} from "../models/blogs.js";
 import passport  from "passport";
 import AuthController from "../controllers/authControllers/authController.js";
-const authController = new AuthController();
 import { blogController } from "../controllers/blogController.js";
 import { userController } from "../controllers/userController.js";
+const authController = new AuthController();
+
+const adminRules = [authController.authControllerMiddlewares.isAdmin];
 // Using express router, creating specific routes
 const router = Router()
 

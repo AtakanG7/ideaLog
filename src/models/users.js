@@ -3,12 +3,12 @@ import { Schema, model } from 'mongoose';
 // User Schema
 const userSchema = new Schema(
   {
-    googleId: { type: String, required: false },
-    name: { type: String, required: false },
     email: { type: String, lowercase: true, required: true },
     password: { type: String, required: true },
+    googleId: { type: String },
+    name: { type: String },
     role: { type: String, enum: ['admin', 'user'], default: 'user' },
-    degree: { type: String, enum: ['Bachelor', 'Master', 'PhD', 'Other'], default: 'Bachelor' },
+    degree: { type: String, enum: ['Bachelor', 'Master', 'PhD'], default: 'Bachelor' },
     visitCount: { type: Number, default: 0 },
     isVerified: { type: Boolean, default: false },
   },

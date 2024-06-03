@@ -4,17 +4,27 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="/css/customcss.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/customcss.css" />
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Atakan Gul's Blog Page</title>
 </head>
 
 <body>
-  <%- include('../partials/headers/headerAdmin.ejs') %>
+  <% if (isAdmin) { %>  
+    <%- include('../partials/headers/headerAdmin.ejs') %>
+  <% } else if (isAuthenticated) { %>
+    <%- include('../partials/headers/headerAuth.ejs') %>
+  <% } else { %>
+    <%- include('../partials/headers/headerUnAuth.ejs') %>
+  <% } %>
 
   <div class="container w-full flex justify-center mt-0 bg-cover bg-center bg-no-repeat" ></div>
     <div class="flex flex-col min-v-screen items-center bg-base-100" style="margin-top: 5rem;">
-      <img src="/img/profile.png" alt="Atakan Gül" class="w-32 h-32 rounded-full  mb-4 glass">
+      <img src="/img/profile.png" alt="Atakan Gül" class="w-32 h-32 rounded-full mb-4 glass" style="border: solid; border: solid; border-width: 2px; border-color: #ff8d29;
+  ">
       <div class="text-center">
         <h1 class="text-2xl font-bold mb-2">Hi, there!</h1>
         <p class="text-lg mb-4 stat-desc">Ready to read techy stuff?</p>
@@ -58,40 +68,82 @@
     </div>
   </div>
 
-  <div class="container my-10 flex w-100 justify-center align-center my-10 py-10">
+  <div class="container my-10 flex w-100 justify-center align-center my-10 py-10" id="scroll-place">
     <article class="prose lg:prose-xl">
       <h2 class="divider center">Latest Blogs</h2>
     </article>
   </div>
 
-  <div class="container p-0" id="scroll-place">
-      <ul class="container m-0 p-0 my-10 flex justify-center align-center flex-col w-100 gap-3 p-0">
-          <% data.forEach(post => { %>
-              <a href="/blogs/blog/<%= post._id %>" class="flex flex-col rounded-lg bg-base-100 shadow-secondary-1 m-0 p-0 md:flex-row">
-                  <img
-                      id="post-<%= post._id %>"
-                      src=""
-                      alt="Blog Image"
-                      class="h-96 w-full rounded-t-lg object-cover md:h-auto md:w-48 md:!rounded-none md:!rounded-s-lg"
-                  />
-                  <div class="flex flex-col justify-start p-6">
-                      <h5 class="mb-2 text-xl font-medium"><%= post.title %></h5>
-                      <p class="mb-4 text-base">
-                          <%= post.content %>
-                      </p>
-                      <p class="text-xs text-surface/75 ">
-                          Published: <%= post.publishedAt ? new Intl.DateTimeFormat('en-US').format(new Date(post.publishedAt)) : 'No date' %> | Category: <%= post.category %>
-                      </p>
-                      <p class="text-xs text-surface/75 ">
-                          Author: <%= post.authorName %>
-                      </p>
-                  </div>
-                </a>
-          <% }) %>
-      </ul>
-  </div>
-
-
+  <div class="row mx-3" >
+    <% data.forEach(post =>{ %>
+      <div href="/blogs/blog/<%= post._id %>" class="col-12 col-md-4 mb-4">
+        <div class="rounded-lg text-surface shadow-secondary-1">
+          <a href="/blogs/blog/<%= post._id %>">
+            <img
+              id="post-<%= post._id %>"
+              class="rounded-t-lg w-100"
+              src="/img/profile.png"
+              alt="Skyscrapers"
+            />
+          </a>
+          <div class="p-6 pb-0">
+            <h5 class="mb-2 text-xl font-medium leading-tight"><%= post.title %>
+              <% if (post.authorMetadata.name.includes("AI")) { %>
+                <span class="badge badge-sm px-1 text-danger">(AI created)</span>
+              <% } %>
+            </h5>
+            
+            <p class="mb-4 text-base dark:text-neutral-1000" style="overflow: hidden;">
+              Abstract: <%= post.description.length > 200 ? post.description.substring(0, 200) + "..." : post.description %>
+            </p>
+          </div>
+      
+          <div class="m-0 p-0 border-t-2 border-neutral-100  text-center text-surface/75 dark:border-white/10 dark:text-neutral-500">
+            
+          </div>
+          <div class="mt-auto border-t-2 border-neutral-100 px-6 py-3 text-center text-surface/75 dark:border-white/10 dark:text-neutral-500">
+            <small>Published at <strong><%= post.createdAt.toLocaleDateString("en-US", {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            }) %></strong></small>
+          </div>
+          <div class="mt-auto border-neutral-100  py-3 text-center text-surface/75 dark:border-white/10 dark:text-neutral-500">
+            <div class="flex items-center justify-center gap-3 w-100">
+              <div class="flex items-center justify-center">
+                <!-- Like Button -->
+                <button class="btn btn-ghost btn-circle">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                </button>
+                <span class="ml-2"><%= post.likes %> </span>
+              </div>
+              <div class="flex items-center justify-center">
+                <!-- Comment Button -->
+                <button class="btn btn-ghost btn-circle">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                </button>
+                <span class="ml-2"><%= post.comments.length %> </span>
+              </div>
+              <div class="flex items-center justify-center">
+                <button class="btn btn-ghost btn-circle">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </button>
+                <span class="ml-2"><%= post.views %> </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+   </div>
   
   
   <% if (nextPage !== null) { %>

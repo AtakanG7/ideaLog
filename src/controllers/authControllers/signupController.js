@@ -38,7 +38,7 @@ class signupController {
             await user.save();
     
             // Create a new session for the user
-            await authControllerMiddleware.createSession(req, res);
+            await authControllerMiddleware.createSession(req, res, user);
     
             // Generate a verification code
             var verificationToken = generator.generate({

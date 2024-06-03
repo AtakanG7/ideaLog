@@ -35,6 +35,13 @@
     </style>
   </head>
   <body>
+    <% if (isAdmin) { %>  
+      <%- include('../partials/headers/headerAdmin.ejs') %>
+    <% } else if (isAuthenticated) { %>
+      <%- include('../partials/headers/headerAuth.ejs') %>
+    <% } else { %>
+      <%- include('../partials/headers/headerUnAuth.ejs') %>
+    <% } %>
     <div class="container mb-3">
       <i class="fas fa-tools construction-icon"></i>
       <h1>Website Under Construction</h1>
