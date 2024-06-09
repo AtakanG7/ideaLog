@@ -164,7 +164,7 @@ class authControllerMiddlewares{
                 const token = req.headers.cookie.split('=')[1];
                 // If the token is not present, return a 401 Unauthorized error
                 if (!token) {
-                    return res.status(401).json({ message: 'Unauthorized' });
+                    return false
                 }
                 // Decode the JWT and verify the JWT
                 const decoded = jwt.verify(token, keyValt.SECRET_KEY);
@@ -174,14 +174,14 @@ class authControllerMiddlewares{
                 const userId = await client.get(sessionUUID);
                 // If the user ID is not present, return a 401 Unauthorized error
                 if (!userId) {
-                    return res.status(401).json({ message: 'Unauthorized' });
+                    return false
                 }
                
                 // Get the user from the database
                 const user = await Users.findOne({ _id: userId });
                 // If the user is not present, return a 401 Unauthorized error
                 if (!user) {
-                    return res.status(401).json({ message: 'Unauthorized' });
+                    return false
                 }
                 
                 return user;

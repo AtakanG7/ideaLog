@@ -25,7 +25,7 @@ export const sendTelegramMessage = async (message) => {
 
     await axios.post(url, data);
   } catch (error) {
-    console.error('Error sending message to Telegram:', error);
+    console.error('Error sending message to Telegram:');
   }
 };
 

@@ -47,7 +47,7 @@ async function sendToLLM(prompt, isCheapTask) {
     const chatCompletion = await openai.chat.completions.create({
       messages: [{ role: 'user', content: prompt }],
       model: !isCheapTask? keyValt.OPENAI_BASE_MODEL : 'gpt-3.5-turbo',
-      temperature: 0.5,
+      temperature: 0.8,
     });
     const message = chatCompletion.choices[0].message.content;
     return message.trim();
@@ -75,8 +75,15 @@ async function startAIPostCreation(query) {
       sendTelegramMessage('[CANCELLED] No articles found. Please try again later.');
       return;
     }
+
+    const promptDirectives = `You are a professional blogger. You have a different taste of humor in blogging you always try to use easy words and
+    engaging funny sentences.
+  
+    Keep the content enjoyable and easy to read. Try to put some excitement into sentences. 
+    Who cares telling boring stories and boring words, keep it simple and make fun of the subject and keep it in taste.`
+
     // Blog Post Content
-    const blogPostContent = await getAICreatedBlogPost(articles);
+    const blogPostContent = await getAICreatedBlogPost(promptDirectives, articles);
     sendTelegramMessage('Blog Post Content:\n' + blogPostContent);
     
     // Blog Post Title
@@ -88,10 +95,12 @@ async function startAIPostCreation(query) {
     sendTelegramMessage('Blog Post Description:\n' + blogPostDescription);
     
     // Important Keywords
-    const importantKeywords = await getImportantKeywords(blogPostContent);
+    let importantKeywords = await getImportantKeywords(blogPostContent);
     sendTelegramMessage('Important Keywords:\n' + importantKeywords);
 
+    importantKeywords += blogPostTitle + blogPostDescription + blogPostContent;
 
+    sendTelegramMessage('Important Keywords:\n' + importantKeywords);
     return ({
       title: blogPostTitle,
       content: blogPostContent,
@@ -106,13 +115,46 @@ async function startAIPostCreation(query) {
   }
 }
 
-async function getAICreatedBlogPost(articles) {
+async function startUserPostCreation(content) {
+  try {
+    const promptDirectives = `Your task is rewrite the given blog post without changing the meanings and logics. 
+    put the given content in a requested shape. The output will be disccussed now.`
 
-  const prompt = `You are a professional blogger. You have a different taste of humor in blogging you always try to use easy words and
-  engaging funny sentences.
+    // Blog Post Content
+    const blogPostContent = await getAICreatedBlogPost(promptDirectives, content);
+    
+    // Blog Post Title
+    const blogPostTitle = await getBlogPostTitle(blogPostContent);
+    sendTelegramMessage('Blog Post Title:\n' + blogPostTitle);
 
-  Keep the content enjoyable and easy to read. Try to put some excitement into sentences. 
-  Who cares telling boring stories and boring words, keep it simple and make fun of the subject and keep it in taste.
+    // Blog Post Description
+    const blogPostDescription = await getBlogPostDescription(blogPostContent);
+    sendTelegramMessage('Blog Post Description:\n' + blogPostDescription);
+    
+    // Important Keywords
+    let importantKeywords = await getImportantKeywords(blogPostContent);
+    sendTelegramMessage('Important Keywords:\n' + importantKeywords);
+
+    importantKeywords += blogPostTitle + blogPostDescription + blogPostContent;
+
+    sendTelegramMessage('Important Keywords:\n' + importantKeywords);
+    return ({
+      title: blogPostTitle,
+      content: blogPostContent,
+      description: blogPostDescription,
+      search_keywords: importantKeywords
+    });
+
+  } catch (error) {
+    console.error('Error generating blog post:', error);
+    sendTelegramMessage('Error generating blog post:\n' + error);
+    return null;
+  }
+}
+
+async function getAICreatedBlogPost(directives ,articles, isCheapTask = false) {
+
+  const prompt = `${directives}
 
   The output you generate will be in plain text format. However, the content of your blog post should be in JSON format. 
   Do not include the 'json' keyword or any other formatting at the beginning or end of your output. 
@@ -122,17 +164,17 @@ async function getAICreatedBlogPost(articles) {
   {
     "1": {
       "title": "Title of the first segment of the blog post",
-      "content": "Content of the first segment of the blog post (most be in html format! use html tags, bold, italics, etc.)",
+      "content": "Content of the first segment of the blog post quotes,lists,orders,code block,headers,sections,main content, and more you can use. You have access to daisy ui classes.",
       "one_keyword": "Best keyword of the first segment of the blog post"
     },
     "2": {
       "title": "Title of the second segment of the blog post",
-      "content": "Content of the second segment of the blog post (most be in html format! use html tags, bold, italics, etc.)",
+      "content": "Content of the second segment of the blog post quotes,lists,orders,code block,headers,sections,main content, and more you can use. You have access to daisy ui classes.",
       "one_keyword": "Best keyword of the second segment of the blog post"
     },
     "3": {
       "title": "Title of the third segment of the blog post",
-      "content": "Content of the third segment of the blog post (most be in html format! use html tags, bold, italics, etc.)",
+      "content": "Content of the third segment of the blog post quotes,lists,orders,code block,headers,sections,main content, and more you can use. You have access to daisy ui classes.",
       "one_keyword": "Best keyword of the third segment of the blog post"
     } ... (if there are more segments in the article you can add them here)
   }
@@ -142,13 +184,13 @@ async function getAICreatedBlogPost(articles) {
   `;
 
   // Blog Post Generation
-  const blogPost = await sendToLLM(prompt, false);
+  const blogPost = await sendToLLM(prompt, isCheapTask);
   sendTelegramMessage('Gnerated Blog Post:\n' + blogPost);
 
   return blogPost;
 }
 
-async function getImportantKeywords(content) {
+async function getImportantKeywords(content, isCheapTask = true) {
   try {
 
     const prompt = `You are a keyword finder. Given the context, determine what the content is about. The content may be in JSON format or plain text; your output should be plain text.
@@ -163,7 +205,7 @@ async function getImportantKeywords(content) {
     Your keywords:
     `
 
-    const keywords = await sendToLLM(prompt, true);
+    const keywords = await sendToLLM(prompt, isCheapTask);
     sendTelegramMessage('keywords from Blog Post:\n' + keywords);
 
     return keywords;
@@ -174,7 +216,7 @@ async function getImportantKeywords(content) {
   }
 }
 
-async function getBlogPostDescription(content) {
+async function getBlogPostDescription(content, isCheapTask = true) {
   try {
 
     const prompt = `You are a description generator. Given the content, determine what the content is about. The content may be in JSON format or plain text; your output should be plain text.
@@ -187,7 +229,7 @@ async function getBlogPostDescription(content) {
     
     Your description: `;
 
-    const description = await sendToLLM(prompt, true);
+    const description = await sendToLLM(prompt, isCheapTask);
     sendTelegramMessage('description from Blog Post:\n' + description);
 
     return description;
@@ -198,7 +240,7 @@ async function getBlogPostDescription(content) {
   }
 };
 
-async function getBlogPostTitle(content) {
+async function getBlogPostTitle(content, isCheapTask = true) {
   try {
     const prompt = `You are a title generator. Given the content, determine what the content is about. The content may be in JSON format or plain text; your output should be plain text.
     Example:
@@ -211,7 +253,7 @@ async function getBlogPostTitle(content) {
     
     Now determine the best title according to the content. Make it short!`;
 
-    const title = await sendToLLM(prompt, true);
+    const title = await sendToLLM(prompt, isCheapTask);
     sendTelegramMessage('title from Blog Post:\n' + title);
 
     return title;
@@ -222,4 +264,4 @@ async function getBlogPostTitle(content) {
   }
 };
 
-export { startAIPostCreation };
+export { startAIPostCreation, startUserPostCreation };

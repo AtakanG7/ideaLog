@@ -26,38 +26,21 @@
       <img src="/img/profile.png" alt="Atakan Gül" class="w-32 h-32 rounded-full mb-4 glass" style="border: solid; border: solid; border-width: 2px; border-color: #ff8d29;
   ">
       <div class="text-center">
-        <h1 class="text-2xl font-bold mb-2">Hi, there!</h1>
+        <h1 class="text-2xl font-bold">Hi, there!</h1>
         <p class="text-lg mb-4 stat-desc">Ready to read techy stuff?</p>
       </div>
-      <button class="btn btn-accent glass mb-3 " onclick="my_modal_4.showModal()">
-        Subscribe
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
-      </button>
-      <dialog id="my_modal_4" class="modal">
-        <div class="modal-box">
-          <form method="dialog">
-            <button class="btn btn-sm glass btn-circle btn-accent absolute right-2 top-2">✕</button>
-          </form>
-          <h3 class="font-bold text-lg mb-2">Newsletter Subscription</h3>
-          <form action="/users/subscribe/" method="post">
-            <fieldset class="form-control w-80">
-              <label class="label">
-                <span class="label-text">Enter your email address</span>
-              </label> 
-              <input type="text" id="email" name="email" placeholder="username@site.com" class="input input-bordered join-item mb-2" /> 
-              <button class="btn glass join-item">OK</button>
-            </fieldset>
-          </form>
-        </div>
-      </dialog>
+      <label class="input input-bordered flex items-center gap-2 mb-3 mt-0">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4 opacity-70"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" /></svg>
+        <form action="/blogs/subscribe/" method="post">
+          <input type="text" name="email" class="grow text-secondary bg-base-1000 w-full" placeholder="Email" value="" />
+        </form>
+      </label>
       <div class="stats shadow my-2">
-  
         <div class="stat">
           <div class="stat-title">Total Published Blogs</div>
           <div class="stat-value text-secondary"><%= blogCount %></div>
-          <div class="stat-desc">21% more than last month</div>
+          <div class="stat-desc">including AI created blogs.</div>
         </div>
-        
       </div>
 
       <span id="icon" onclick="scrollToElement()" class="m-3 mt-5 ">
@@ -88,7 +71,7 @@
           </a>
           <div class="p-6 pb-0">
             <h5 class="mb-2 text-xl font-medium leading-tight"><%= post.title %>
-              <% if (post.authorMetadata.name.includes("AI")) { %>
+              <% if (post.authorMetadata && post.authorMetadata.name && post.authorMetadata.name.toLowerCase().includes("ai")) { %>
                 <span class="badge badge-sm px-1 text-danger">(AI created)</span>
               <% } %>
             </h5>

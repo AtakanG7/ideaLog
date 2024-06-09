@@ -44,21 +44,7 @@ router.get("/create", isAuth, (req, res) => {
     res.render("./pages/blogPostPage", { currentRoute: `/blogs/creation` })
 });
 
-router.post("/", isAuth, async (req, res) => {
-    const author = '66583b4238da789167af97ce';
-    const { authorName, category, description ,status, content } = req.body;
-    const blog = new Blogs({ 
-      authorName: "Atakan Gül",
-      category: category,
-      description: description,
-      status: 'published',
-      content: content,
-      author: author,
-      createdAt: Date.now(),
-     });
-    await blog.save();
-    res.redirect("/blogs/blog/" + blog._id);
-});
+router.post("/", isAuth, blogController.createUserWrittenBlogs);
 
 router.get("/new/blog/create", isAuth, (req, res) => {
   res.render("./pages/blogPostPage", { currentRoute: `/blogs/creation` })

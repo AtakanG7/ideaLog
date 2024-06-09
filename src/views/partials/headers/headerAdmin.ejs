@@ -3,7 +3,7 @@
 <%- include('../search.ejs') %>
 
 <div class="navbar bg-base-100 pt-3 px-3" style="position: sticky;
-top: 0px;">
+top: 0px; z-index: 9999 !important;">
   <div class="navbar-start">
     <div class="nav gap-2">
       <div class="dropdown">
@@ -56,6 +56,13 @@ top: 0px;">
   function showSeachBar() {
     const searchBar = document.querySelector('.searchBar');
     searchBar.style.display = searchBar.style.display === 'none' ? 'block' : 'none';
+  }
+
+  function closeSearchBar() { 
+    const searchBar = document.querySelector('.searchBar');
+    searchBar.style.display = 'none';
+    document.getElementById('searchInput').value = '';
+    fetchArticales();
   }
 
 </script>

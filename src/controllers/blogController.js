@@ -1,7 +1,7 @@
 import { Blogs } from "../models/blogs.js";
 import { Users } from "../models/users.js";
 import { sendTelegramMessage } from "../../apis/telegram.js";
-import { startAIPostCreation } from "../../apis/llm.js";
+import { startAIPostCreation, startUserPostCreation } from "../../apis/llm.js";
 import AuthController from "../controllers/authControllers/authController.js";
 const authController = new AuthController();
 /**
@@ -79,7 +79,8 @@ export const  blogController = {
     getPublishedBlogs: async (req, res) => {
         let perPage = 10;
         let page = req.query.page || 1;
-    
+        
+
         const data = await Blogs
             .find({ status: 'published' })
             .sort({ createdAt: -1 })
@@ -98,7 +99,7 @@ export const  blogController = {
           current: page,
           blogCount: count,
           nextPage: hasNextPage ? nextPage : null,
-          currentRoute: '/'
+          currentRoute: '/',
         });
     },
     
@@ -111,6 +112,41 @@ export const  blogController = {
             
             // Get author metadata
             const authorMetadata = await Users.findById(req.params.id)
+            
+            // Save the ai post to the database
+            const blog = new Blogs({
+                ...blogPostRequiredMetadata,
+                authorMetadata: authorMetadata,
+                status: 'published',
+            });
+
+            await blog.save();
+
+            res.status(200).json({
+                success: true,
+                message: "Blog post created successfully",
+                data: blog
+            });
+        } catch (error) {
+            sendTelegramMessage(`[Error] During ai blog creation:  ${error.message}`);
+            res.status(500).json({
+                success: false,
+                message: error.message
+            });
+        }
+    },
+
+    createUserWrittenBlogs: async (req, res) => {
+        try {
+            sendTelegramMessage(`[INFO] Starting user blog creation...`);
+            
+            // Get blog post required metadata minus authorMetadata
+            const blogPostRequiredMetadata = await startUserPostCreation(req.body.content)
+            
+            // Get author metadata
+            const authorMetadata = await authController.authControllerMiddlewares.getUserFromSession(req, res);
+            
+            console.log(authorMetadata)
             
             // Save the ai post to the database
             const blog = new Blogs({

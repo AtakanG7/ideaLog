@@ -31,30 +31,36 @@
       <button class="btn flex ms-auto m-4" onclick="my_modal_3.showModal()">Go on</button>
     </div>
     <dialog id="my_modal_3" class="modal">
-      <div class="modal-box gap-2">
+      <div class="modal-box flex flex-col gap-3">
         <form method="dialog" id="blogForm">
           <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-          <h3 class="font-bold text-lg">I need them be careful :)</h3>
-          <select name="category" required class="select select-ghost w-full max-w-xs">
-            <option disabled selected>Pick a category</option>
-            <option>programming</option>
-            <option>technology</option>
-            <option>javascript</option>
-            <option>education</option>
-            <option>lifestyle</option>
-            <option>gaming</option>
-            <option>AI</option>
-            <option>other</option>
-          </select>
-          <select required name="status" class="select select-bordered w-full max-w-xs">
-            <option disabled selected>Review</option>
-          </select>
-          <textarea name="description" required class="textarea textarea-secondary w-100" placeholder="Description"></textarea>
+            <h3 class="font-bold text-lg">The post will be in <strong>review</strong> until admins approves it.</h3>
           <button type="button" class="btn" onclick="sendEditorContent()">Fire it :)</button>
         </form>
+        <div class="flex items-center space-x-2" id="loadingSection" style="display: none;">
+          <span class="animate-spin w-5 h-5 mr-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-6 h-6 stroke-current">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A8.003 8.003 0 014 12H0c0 6.627 5.373 12 12 12v-4c-3.313 0-6.292-1.343-8.485-3.515l2.829-2.829zM12 4c3.313 0 6.292 1.343 8.485 3.515l-2.829 2.829A8.003 8.003 0 0112 4V0c6.627 0 12 5.373 12 12h-4c0-3.313-1.343-6.292-3.515-8.485L14.485 7.515A7.963 7.963 0 0012 4z"></path>
+            </svg>
+          </span>
+          <span>Loading...</span>
+        </div>
+        
+        <div class="flex items-center space-x-2" id="doneSection" style="display: none;">
+          <span class="text-green-500">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-6 h-6 stroke-current">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </span>
+          <span class="text-green-500">Done!</span>
+        </div>
       </div>
     </dialog>
 
+
+    
+    
     <!-- Include the Quill library -->
     <script src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"></script>
 
@@ -70,32 +76,40 @@
 
       async function sendEditorContent() {
         const content = getEditorContent();
-        const form = document.getElementById('blogForm');
-        const formData = new FormData(form);
         const data = {
-          content: content,
-          category: formData.get('category'),
-          status: formData.get('status'),
-          description: formData.get('description')
+          content: content
         };
-        
-        console.log('Form Data:', data);
 
-        const response = await fetch('/blogs', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-        });
+        const loadingSection = document.getElementById('loadingSection');
+        const doneSection = document.getElementById('doneSection');
 
-        if (response.ok) {
-          console.log('Content sent successfully');
-          redirect('/blogs');
-        } else {
-          console.error('Failed to send content');
+        try {
+          loadingSection.style.display = 'flex';
+
+          const response = await fetch('/blogs', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+          });
+
+          if (response.ok) {
+            console.log('Content sent successfully');
+            doneSection.style.display = 'flex';
+            setTimeout(() => {
+              redirect('/blogs');
+            }, 1000); // Redirect after 1 second
+          } else {
+            console.error('Failed to send content');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        } finally {
+          loadingSection.style.display = 'none';
         }
       }
+
     </script>
 </body>
 </html>

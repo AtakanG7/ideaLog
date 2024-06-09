@@ -9,12 +9,20 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9999;
+    z-index: 9999999 !important;
   }
 
   .searchBar .search__form {
     display: flex;
     align-items: center;
+  }
+
+  .content-custom {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll !important;
+    height: 85vh !important;
   }
 
   .searchBar .search__form input[type="search"] {
@@ -25,42 +33,28 @@
     font-size: 1rem;
   }
 
-  .searchBar #searchClose {
-    content: 'x';
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    top: 40px;
-    right: 30px;
-    background: rgb(255, 0, 0)000;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    line-height: 20px;
-    text-align: center;
-    border: 1px solid #000000;
-    font-size: 20px;
-  }
 </style>
 
-<div id="seacrhBar" class="searchBar" style="display: none;">
-  <div class="container m-0 p-5">
-    <label class="input input-bordered flex items-center gap-2">
-      <input onkeydown="event.key === 'Enter' && fetchArticales()"
-        class="w-100 grow"
-        type="search"
-        aria-label="Search"
-        id="searchInput"
-        name="searchTerm"
-        placeholder="Search on the site..." />
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4 opacity-70"><path fill-rule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clip-rule="evenodd" /></svg>
-    </label>
-    <div id="searchClose">X</div>
-    <div id="searchBar" class="content flex w-100 h-100">
-
+<div id="seacrhBar " class="searchBar p-2 w-100" style="display: none;" visibility="visible">
+  <div class=" m-0">
+    <div class="flex flex-row align-items-center no-wrap ">
+      <label class="input input-bordered flex items-center  w-100 gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4 opacity-70"><path fill-rule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clip-rule="evenodd" /></svg>
+        <input onkeydown="event.key === 'Enter' && fetchArticales()"
+          class="w-100 grow"
+          type="search"
+          aria-label="Search"
+          id="searchInput"
+          name="searchTerm"
+          placeholder="Search on the site..." />
+          <div id="searchClose" class="btn btn-circle btn-ghost" aria-label="Close">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-5 h-5 stroke-current">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </div>
+      </label>
     </div>
+    <div id="searchBar" class="content-custom content flex w-100"></div>
   </div>
 </div>
 
@@ -85,23 +79,43 @@
     }
   }); 
 
+  searchClose.addEventListener('click', () => {
+      searchBar.style.display = 'none';
+  })
 
   // Fetch the articales by fetching server with the values
   async function fetchArticales() {
     const response = await fetch('/blogs/search?search=' + decodeURI(searchInput.value));
     const data = await response.json();
+    console.log(data)
     sent = false;
     // display the results in the content div
     document.getElementById('searchBar').style.display = 'block';
     const content = document.getElementsByClassName('content')[0];
     content.innerHTML = '';
     data.forEach((article) => {
-      content.innerHTML += `<a href="/blogs/blog/${article._id}" class="text-sm text-blue-600 hover:text-blue-700 hover:underline">${article.title}</a><br/>`;
-    });
-    searchClose.addEventListener('click', () => {
-      searchBar.style.display = 'none';
-    })
+        content.innerHTML += `
+          <div class="card shadow-lg compact bg-white text-black my-2">
+            <div class="card-body d-flex justify-content-between">
+              <div>
+                <a href="/blogs/blog/${article._id}" class="text-lg text-dark font-bold hover:text-blue-600 hover:text-blue-700 hover:underline">
+                  ${article.title} - <span class="text-muted">${article.authorMetadata.name}</span>
+                </a>
+                <p class="text-sm">${article.description}</p>
+                <p class="text-xs text-gray-500">Published on: ${new Date(article.publishedAt).toLocaleDateString()}</p>
+              </div>
+              <div class="flex flex-row justify-end">
+                <p class="text-sm text-gray-600 flex justify-center">Comments: ${article.comments.length}</p>
+                <p class="text-sm text-gray-600 flex justify-center">Likes: ${article.likes}</p>
+                <p class="text-sm text-gray-600 flex justify-center">Views: ${article.views}</p>
+              </div>
+            </div>
+          </div>
+        `;
+      });
   }
+
+
 
 
 </script>

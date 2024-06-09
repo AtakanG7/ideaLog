@@ -38,8 +38,9 @@ router.get('/auth/google', passport.authenticate('google', { scope : ['profile',
 
 router.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login' }),
-  function(req, res) {
+  async function(req, res) {
     // Successful authentication, redirect home.
+    await  authController.authControllerMiddlewares.getUserFromSession(req, res, req.user);
     res.redirect('/');
 });
 

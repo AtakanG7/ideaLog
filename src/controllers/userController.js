@@ -1,7 +1,8 @@
 import { Users, userSchema } from "../models/users.js";
 import { sendTelegramMessage } from "../../apis/telegram.js";
 import { subscribeToNewsletter, unsubscribeFromNewsletter } from "../../apis/mail.js";
-
+import AuthController from "../controllers/authControllers/authController.js";
+const authController = new AuthController();
 export const userController = {
 
     getProfile: (req, res) => {
@@ -25,6 +26,4 @@ export const userController = {
     unsubcribeFromNewsletter: async (req, res) => {
         await unsubscribeFromNewsletter(req, res);
     }
-
-}
-
+}   

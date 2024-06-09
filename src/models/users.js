@@ -5,6 +5,7 @@ const userSchema = new Schema(
   {
     email: { type: String, lowercase: true, required: true },
     password: { type: String, required: true },
+    isSubscribed: { type: Boolean, required: true, default: false },
     googleId: { type: String },
     name: { type: String },
     role: { type: String, enum: ['admin', 'user'], default: 'user' },
