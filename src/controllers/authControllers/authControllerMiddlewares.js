@@ -1,9 +1,9 @@
 
-import client from "../../../apis/redis.js";
+import client from "../../../apis/db/redis.js";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from 'uuid';
 import Config from "../../../config/config.js";
-import { sendTelegramMessage } from "../../../apis/telegram.js";
+import { sendTelegramMessage } from "../../../apis/services/telegram.js";
 import { Users } from "../../models/users.js";
 const keyValt = new Config();
 
@@ -133,6 +133,28 @@ class authControllerMiddlewares{
             }
         }
 
+        async userExistsIfNoCreateForGoogle(user) {
+            try {
+                const existingUser = await Users.findOne({ email: user._json.email });
+                if (existingUser) {
+                    return existingUser;
+                } else {
+                    const newUser = new Users({
+                        email: user._json.email,
+                        password: 'googleauth',
+                        name: user._json.name,
+                        googleId: user.id,
+                        isVerified: user._json.email_verified,
+                    });
+                    await newUser.save();
+                    return newUser;
+                }
+            } catch (err) {
+                console.error(`[Error] ${err.message}`);
+                throw err;
+            }
+        }
+
         /**
          * Creates a new session for the user. Generates a UUID, signs it with the
          * secret key and stores it in a HTTP-only cookie. Stores the UUID in Redis
@@ -140,8 +162,16 @@ class authControllerMiddlewares{
          * @param {Object} req - The request sent by the client
          * @param {Object} res - The response to be sent to the client
          */
-        async createSession(req, res, user) {
+        async createSession(req, res, _user) {
             try {
+
+                // To create session before make sure the user in the db check if user exists with the id first and then with email
+                // If the user does not exist create a new user.
+                let user = _user;
+                if(_user._json){
+                    user = await this.userExistsIfNoCreateForGoogle(_user);
+                }
+                
                 const sessionUUID = uuidv4();
                 const token = jwt.sign({ uuid: sessionUUID, role: user.role }, keyValt.SECRET_KEY, { expiresIn: '1h' });
                 // Store the token in an HTTP-only cookie
@@ -151,12 +181,19 @@ class authControllerMiddlewares{
                 // Setting authenticated to true
                 req.session.isAuthenticated = true;
                 req.session.role = user.role;
+
+                return
             } catch (err) {
-                sendTelegramMessage(`[Error] ${err.message}`);
+                sendTelegramMessage(`[Error] In createSession`);
                 console.error(err);
             }
         }
 
+        async getUser(req, res) {
+            const user = await this.getUserFromSession(req, res);
+            return user;
+        }   
+        
         // Get uuid from JWT and get hte user_id from Redis
         async getUserFromSession(req, res) {
             try {

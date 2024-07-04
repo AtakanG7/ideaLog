@@ -1,5 +1,5 @@
 import axios from 'axios';
-import Config from '../config/config.js';
+import Config from '../../config/config.js';
 
 /**
  * This module provides functions to interact with the Telegram Bot API.

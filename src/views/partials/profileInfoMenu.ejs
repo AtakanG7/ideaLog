@@ -1,0 +1,68 @@
+<p class="btn" onclick="getProfileInfo(), my_modal_1.showModal()">My Profile</p>
+<dialog id="my_modal_1" class="modal">
+  <div class="modal-box">
+    <div class="container flex flex-row justify-content-between">
+      <h3 class="font-bold text-lg my-2">Your Profile Info</h3>
+      <form method="dialog">
+        <button class="btn">Close</button>
+      </form>
+    </div>
+    <div class="container flex flex-col gap-3">
+      <div class="row justify-content-center ">
+        <div class="col-md-6">
+          <div class="text-center mb-4">
+            <img src="/img/avatar.png" class="rounded-circle" alt="Avatar" width="150">
+          </div>
+          <div class="form-group">
+            <label name="email" class="font-weight-bold">Email <i class="fas fa-award text-warning"></i></label>
+            <input type="text" class="form-control skeleton" id="email"   blogRouter>
+          </div>
+        </div>
+      </div>
+      <div class="row gap-2">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="degree">Degree</label>
+            <input type="text" class="form-control skeleton" id="degree" name="degree"  blogRouter>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="isSubscribed">Is Subscribed</label>
+            <input type="text" class="form-control skeleton" id="isSubscribed" name="isSubscribed"  blogRouter>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="isVerified">Is Verified</label>
+            <input type="text" class="form-control skeleton" id="isVerified" name="isVerified" blogRouter>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="role">Role</label>
+            <input type="text" class="form-control skeleton" id="role" name="role" blogRouter>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="visitCount">Visit Count</label>
+            <input type="text" class="form-control skeleton" id="visitCount" name="visitCount" blogRouter>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="createdAt">Created At</label>
+            <input type="text" class="form-control skeleton" id="createdAt" name="createdAt"  blogRouter>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</dialog>

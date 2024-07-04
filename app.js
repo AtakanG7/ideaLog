@@ -1,18 +1,24 @@
-// Importing required modules
+// Required modules
 import Config from "./config/config.js";
 import session from "express-session";
 import express from "express";
 import path from "path";
 import passport from "passport";
-import GoogleStrategy from 'passport-google-oauth20';
-import redis from "./apis/redis.js";
-import mongoose from "./apis/db.js";
-import { sendTelegramMessage } from "./apis/telegram.js";
-// Importing routers
-import index from "./src/routes/indexRouter.js";
-import blogPage from "./src/routes/blogRouter.js";
-import bodyParser from "body-parser";
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import redis from "./apis/db/redis.js";
+import mongoose from "./apis/db/db.js";
+import image_server_db from "./apis/db/imagedb.js";
+import { sendTelegramMessage } from "./apis/services/telegram.js";
 import expressEjsLayouts from "express-ejs-layouts";
+import bodyParser from "body-parser";
+import { restoreUploadsFolder } from "./src/routes/imageRouter.js";
+// Routers
+import indexRouter from "./src/routes/indexRouter.js";
+import blogRouter from "./src/routes/blogRouter.js";
+import userRouter from "./src/routes/userRouter.js";
+import imageRouter from "./src/routes/imageRouter.js";
+
+// Helpers
 import { isActiveRoute, setUserRole } from './src/helpers/routeHelpers.js';
 
 // Getting config values
@@ -51,9 +57,10 @@ passport.deserializeUser(function(obj, cb) {
 passport.use(new GoogleStrategy({
     clientID: keyValt.GOOGLE_OAUTH2_ID,
     clientSecret: keyValt.GOOGLE_OAUTH2_SECRET,
-    callbackURL: "http://localhost:5000/auth/google/callback"
+    callbackURL: keyValt.GOOGLE_CALLBACK
   },
   function(accessToken, refreshToken, profile, done) {
+    console.log(profile)
     return done(null, profile);
   }
 ));
@@ -75,10 +82,17 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// Connecting routers to the application
-app.use('/', index)
-app.use('/blogs', blogPage)
+// Middleware to serve static files
+app.use('/uploads', express.static('uploads'));
 
+// Connecting routers to the application
+app.use('/', indexRouter)
+app.use('/blogs', blogRouter)
+app.use('/users', userRouter)
+app.use('/images', imageRouter)
+
+// Fetch images from MongoDB
+restoreUploadsFolder()
 
 // Starting the server
 const server = app.listen(port, () => console.log(`Listening on ${port}!`));

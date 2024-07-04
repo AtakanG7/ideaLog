@@ -12,14 +12,11 @@ top: 0px; z-index: 9999 !important;">
           </svg>
         </div>
         <ul tabindex="0" class="menu text-base-content menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-          <li class="flex items-center gap-2">
-            <div class="avatar w-5 h-5 rounded-full"></div>
-            <a href="/profile">Profile</a>
-          </li>
+          <%- include('../profileInfoMenu.ejs') %>             
           <div class="flex flex-col w-full m-0 p-0">
             <div class="divider divider-start m-0 p-0"></div>
           </div>
-          <li><a href="/portfolio.atakangul.com">Portfolio</a></li>
+          <li><a href="https://www.atakangul.com">Portfolio</a></li>
           <li><a href="/about">About</a></li>
           <li><a href="/logout">Log out</a></li>
           <li class="my-1">
@@ -54,10 +51,3 @@ top: 0px; z-index: 9999 !important;">
     <a class="btn btn-ghost btn-outline text-base-content normal-case text-xl">Atakan's Blog</a>
   </div>
 </div>
-<script>
-  function showSeachBar() {
-    const searchBar = document.querySelector('.searchBar');
-    searchBar.style.display = searchBar.style.display === 'none' ? 'block' : 'none';
-  }
-
-</script>

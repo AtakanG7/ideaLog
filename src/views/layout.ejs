@@ -2,26 +2,11 @@
 <html data-theme="light" style="min-height: 100vh; display: flex; flex-direction: column;">
   <head>
     <meta charset="UTF-8" />
-    <title>Atakan's Blog Page</title>
     <link rel="stylesheet" href="/css/style.css" />
-    <link rel="stylesheet" href="/css/customcss.css" />
     <!-- Include any other head content here -->
   </head>
-  <body style="flex-grow: 1;">
-    <div class="top fixed bottom-4 right-4 z-50 opacity-0 transition-opacity duration-300">
-      <a href="#" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path
-            fill-rule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </a>
-    </div>
-
- 
-    
+  <body style="flex-grow: 1; background-color: transparent;">
+   
     <div class="content-wrapper flex-grow">
       <!-- The main content of the page will be rendered here -->
       <%- body %>
@@ -31,4 +16,62 @@
     <%- include('./partials/footer.ejs') %>
   </body>
   <script type="text/javascript" defer src="/js/script.js"></script>
+  <script>
+    function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'light' ? 'retro' : 'light';
+
+  document.documentElement.setAttribute('data-theme', newTheme);
+
+  // Put it to local storage
+  localStorage.setItem('theme', newTheme);
+}
+
+function loadTheme() {
+  const theme = localStorage.getItem('theme');
+  if (theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+  }
+}
+
+loadTheme();
+
+function showSeachBar() {
+  const searchBar = document.querySelector('.searchBar');
+  searchBar.style.display = 'block';
+  searchBar.style.visibility = 'visible';
+}
+
+function closeSearchBar() { 
+  const searchBar = document.querySelector('.searchBar');
+  searchBar.style.display = 'none';
+  document.getElementById('searchInput').value = '';
+}
+
+function getProfileInfo() {
+  fetch('/users/')
+    .then(res => res.json())
+    .then(data => {
+      const dateObj = new Date(data.createdAt);
+      const month = dateObj.toLocaleString('default', { month: 'long' });
+      const day = dateObj.getDate();
+      const year = dateObj.getFullYear();
+      const fields = {
+        createdAt: [month, day, year],
+        degree: data.degree,
+        email: data.email,
+        isSubscribed: data.isSubscribed ? 'Yes' : 'Nope :(',
+        isVerified: data.isVerified ? 'Yes' : 'Nope :(',
+        role: data.role,
+        visitCount: data.visitCount
+      };
+      Object.entries(fields).forEach(([id, value]) => {
+        const input = document.getElementById(id);
+        input.classList.remove('skeleton');
+        input.value = Array.isArray(value) ? value.join(' ') : value;
+      });
+    })
+    .catch(console.error);
+}
+  </script>
 </html>

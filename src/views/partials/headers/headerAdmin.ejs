@@ -13,12 +13,11 @@ top: 0px; z-index: 9999 !important;">
           </svg>
         </div>
         <ul tabindex="0" class="menu text-base-content menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+          <%- include('../profileInfoMenu.ejs') %>
           <li><a href="/dashboard">Dashboard</a></li>
           <div class="flex flex-col w-full m-0 p-0">
             <div class="divider divider-start m-0 p-0"></div>
           </div>
-          <li><a href="/portfolio.atakangul.com">Portfolio</a></li>
-          <li><a href="/about">About</a></li>
           <li><a href="/logout">Log out</a></li>
           <li class="my-1">
             <label class="swap swap-rotate">
@@ -41,9 +40,9 @@ top: 0px; z-index: 9999 !important;">
             <i class="fa fa-plus"></i>
           </a>
         </button>
-        <button onclick="showSeachBar()" class="btn btn-outline btn-ghost">
-          <label class="flex items-center justify-center h-5 w-5">
-            <i class="fa fa-search w3-jumbo w3-text-green"></i>
+        <button onclick="showSeachBar()" class="btn btn-outline btn-ghost cursor-pointer">
+          <label class="flex items-center justify-center h-5 w-5 cursor-pointer">
+            <i class="fa fa-search w3-jumbo w3-text-green cursor-pointer"></i>
           </label>
       </button>
     </div>
@@ -52,17 +51,3 @@ top: 0px; z-index: 9999 !important;">
     <a class="btn btn-ghost btn-outline text-base-content normal-case text-xl">Atakan's Blog</a>
   </div>
 </div>
-<script>
-  function showSeachBar() {
-    const searchBar = document.querySelector('.searchBar');
-    searchBar.style.display = searchBar.style.display === 'none' ? 'block' : 'none';
-  }
-
-  function closeSearchBar() { 
-    const searchBar = document.querySelector('.searchBar');
-    searchBar.style.display = 'none';
-    document.getElementById('searchInput').value = '';
-    fetchArticales();
-  }
-
-</script>

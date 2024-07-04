@@ -9,8 +9,17 @@ const adminRules = [authController.authControllerMiddlewares.isAdmin];
 // Using express router, creating specific routes
 const router = Router()
 
+// Route to render dashboard page
+router.get('/dashboard', blogController.getAllBlogs)
+
+router.get('/a', (req, res) => {
+    res.render("./pages/try.ejs", { currentRoute: '/a' });
+  });
+
 // Route to render index.ejs
 router.get("/", blogController.getPublishedBlogs);
+
+router.get("/privacy-policy", function (req, res) {res.render('./pages/privacyPolicy', { currentRoute: '/privacy-policy' })});
 
 // Route to render login.ejs
 router.get('/login', function (req, res) {res.render('./pages/loginPage', { currentRoute: '/login' })})
@@ -37,24 +46,21 @@ router.get('/signup/verification/:verificationToken', function (req, res) {
 router.get('/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
 
 router.get('/auth/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login' }),
+  passport.authenticate('google', { failureRedirect: '/login', session: false }),
   async function(req, res) {
-    // Successful authentication, redirect home.
-    await  authController.authControllerMiddlewares.getUserFromSession(req, res, req.user);
+      // Successful authentication, redirect home.
+    console.log("works")
+    console.log(req.user)
+    await authController.authControllerMiddlewares.createSession(req, res, req.user);
     res.redirect('/');
+}, 
+  (err, req, res, next) => {
+    res.status(500).json({ message: 'Internal server error' ,error: err.message });
 });
 
 // Logout logic
 router.get('/logout', function (req, res, next) {
     authController.loginController.logout(req, res, next)
 })
-
-router.post("/users/subscribe", userController.subscribeToNewsletter);
-
-router.get("/users/unsubscribe", (req, res) => {
-    res.render("./pages/unsubscribePage", { currentRoute: `/unsubscribe` })
-});
-
-router.post("/users/unsubscribe", userController.unsubcribeFromNewsletter);
 
 export default router;

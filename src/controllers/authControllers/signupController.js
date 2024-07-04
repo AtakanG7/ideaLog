@@ -1,9 +1,9 @@
-import client from "../../../apis/redis.js";
+import client from "../../../apis/db/redis.js";
 import bcrypt from "bcrypt"
 import Config from "../../../config/config.js";
 import generator from "generate-password";
-import { sendEmail } from "../../../apis/mail.js";
-import { sendTelegramMessage } from "../../../apis/telegram.js";
+import { sendEmail } from "../../../apis/services/mail.js";
+import { sendTelegramMessage } from "../../../apis/services/telegram.js";
 import authControllerMiddlewares from "./authControllerMiddlewares.js";
 const keyValt = new Config();
 
@@ -31,7 +31,6 @@ class signupController {
             const user = new Users({
                 email: req.body.email,
                 password: hashedPassword,
-                isVerified: false
             });
     
             // Creating a new user

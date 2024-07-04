@@ -1,9 +1,9 @@
 
 import jwt from "jsonwebtoken";
-import client from "../../../apis/redis.js";
+import client from "../../../apis/db/redis.js";
 import Config from "../../../config/config.js";
-import { sendEmail } from "../../../apis/mail.js";
-import { sendTelegramMessage } from "../../../apis/telegram.js";
+import { sendEmail } from "../../../apis/services/mail.js";
+import { sendTelegramMessage } from "../../../apis/services/telegram.js";
 
 const keyValt = new Config();
 

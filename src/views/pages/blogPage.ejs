@@ -3,10 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@2.51.3/dist/full.css">
-  <link rel="stylesheet" href="/css/style.css" />
-  <title>Document</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <title><%= data.title %> | Atakan Gül</title>
+  <style>
+    .article-title {
+      color: rgb(50, 50, 50);
+      font-size: clamp(3rem, 4vw, 5.2rem);
+      font-weight: 900;
+      line-height: 1.05;
+      margin-bottom: 0;
+    }
+  </style>
 </head>
 <body>
   <% if (isAdmin) { %>  
@@ -16,192 +25,278 @@
   <% } else { %>
     <%- include('../partials/headers/headerUnAuth.ejs') %>
   <% } %>
-  
-  <div class="container-fluid" style="max-width: 500px; word-break: break-all; line-height: 40px;">
-    <ol class="breadcrumb gap-1">
-      <button><a href="/">Back</a></button>
-    </ol>
-    <div class="row">
-      <h1 class="text-2xl font-bold mb-3"><%= data.title %></h1> 
+
+  <div class="container-fluid" style="max-width: 900px; word-break: break-all; line-height: 40px;">
+    <div class="flex w-100">
+      <button class="btn btn-ghost btn-outline text-base-content normal-case text-xl flex ms-auto px-10 py-0 m-1" style="width: fit-content;" onclick="window.location.href='/'">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </button>
+    </div>
+    <div class="row mt-3">
+      <h1 class="article-title"><%= data.title %></h1>
+      
+      <div class="flex items-center space-x-4 mb-5 mt-5">
+        <div class="avatar rounded-full overflow-hidden" style="width: 50px; height: 50px;">
+          <img src="<%= data.authorMetadata.avatarURL ? data.authorMetadata.avatarURL : '/img/user.png' %>" alt="Avatar" class="w-full h-full object-cover">
+        </div>
+        <div>
+          <div class="flex gap-2 justify-center align-center">
+            <h2 class="font-bold text-lg"><%= data.authorMetadata.name %></h2>
+            <% if (data.authorMetadata.isVerified) { %>
+              <span class="inline-flex items-center justify-center w-5 h-5 me-3 text-sm font-semibold text-blue-800 bg-blue-100 rounded-full dark:text-blue-400" title="Verified">
+                <svg class="w-2.5 h-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
+                </svg>
+              </span>
+            <% } %>
+          </div>
+          <small class="text-gray-500"><%= new Date(data.createdAt).toLocaleDateString("en-US", {
+            month: 'short', day: 'numeric', year: 'numeric'
+          }) %></small>
+        </div>
+      </div>
+
       <% const contents = JSON.parse(data.content); %>
+      
+      <div class="ui segment" id="example1">
+        <div class="right ui rail">
+          <div class="ui sticky" style="width: 272px !important; height: 262.663px !important; left: 1167.2px;">
+            <h3 class="ui header">Table of Contents</h3>
+            <div class="bg-white rounded shadow-md w-64">
+              <ul class="space-y-2 px-3">
+                <% Object.entries(contents).forEach(([key, value]) => { %>
+                  <li><a href="#<%= value.title %>" class="text-blue-600 hover:underline"><%= value.title %></a></li>
+                <% }); %>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <% Object.entries(contents).forEach(([key, value]) => { %>
-        <div class="mb-8">
-          <img id="post-<%= key %>" class="rounded-t-lg w-100 mb-5 p-2 skeleton" alt="<%= value.title %>" />
-          <h2 class="text-2xl font-bold mb-2"><%= value.title %></h2>
-          <p class="mb-4"><%- value.content %></p>
+        <div class="mb-8" id="<%= value.title %>">
+          <img src="<%= value.image_url || '/img/back.jpg' %>" id="post-<%= key %>" class="rounded-t-lg w-100 mb-5 p-2 skeleton" alt="<%= value.title %>" />
+          <h1 class="text-2xl font-bold mb-2"><%= value.title %></h1>
+          <p class="mb-4 text-lg" style="font: 300; font-size: 17px; line-height: 35px; text-base/loose"><%- value.content %></p>
         </div>
       <% }); %>
+
       <div class="card bg-base-100 shadow-xl mt-5">
         <div class="container px-5 pt-5">
           <h1 class="text-2xl"><%= data.title %></h1> 
-          <div class=" mb-0">
+          <div class="mb-0">
             <small>Published at <strong><%= new Date(data.createdAt).toLocaleDateString("en-US", {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
+              weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
             }) %></strong></small>
           </div>
-          <div class="flex items-center space-x-4  rounded-full mt-4 gap-1">
-              <div class="avatar rounded-full" style="background-color: rgb(247, 103, 7);">
-                  <div class="rounded-full w-16 flex justify-center align-center w-100 h-100">
-                      <span class="text-2xl text-white"><%= data.authorMetadata.email.slice(0,2) %></span>
-                  </div>
-              </div>
-              <div>
-                  <h2 class=" font-bold"><%= data.authorMetadata.email %></h2>
-              </div>
-              <span class="inline-flex items-center justify-center w-5 h-5 me-3 text-sm font-semibold text-blue-800 bg-blue-1000 rounded-full dark:text-blue-400">
+          <div class="flex items-center space-x-4 my-5">
+            <div class="avatar rounded-full overflow-hidden" style="width: 50px; height: 50px;">
+              <img src="<%= data.authorMetadata.avatarURL ? data.authorMetadata.avatarURL : '/img/user.png' %>" alt="Avatar" class="w-full h-full object-cover">
+            </div>
+            <div>
+              <div class="flex gap-2 justify-center align-center">
+                <h2 class="font-bold text-lg"><%= data.authorMetadata.name %></h2>
+                <% if (data.authorMetadata.isVerified) { %>
+                  <span class="inline-flex items-center justify-center w-5 h-5 me-3 text-sm font-semibold text-blue-800 bg-blue-100 rounded-full dark:text-blue-400" title="Verified">
                     <svg class="w-2.5 h-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
                       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
                     </svg>
-                  <span class="sr-only">Approved</span>
-              </span>
+                  </span>
+                <% } %>
+              </div>
+            </div>
           </div>
-
-          <!-- likeComment.ejs -->
         </div>
       
         <div class="card-body">
           <div class="flex items-center justify-center gap-3">
             <div class="flex items-center">
-              <!-- Like Button -->
-              <button onclick="likePost()" class="btn btn-ghost btn-circle">
+              <button onclick="likePost()" class="btn btn-ghost btn-circle" title="Clap count">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.823 19.773c.843-.843.945-2.308.24-3.268a3.51 3.51 0 00-4.943-.736L6 16.89V19.5l5.323-1.727zM12.177 4.227c-.843.843-.945 2.308-.24 3.268a3.51 3.51 0 004.943.736L18 7.11V4.5l-5.323 1.727z" />
                 </svg>
               </button>
-              <span class="ml-2 clap"><%= data.likes %> </span>
+              <span class="ml-2 clap"><%= data.likes %></span>
             </div>
             <div class="flex items-center">
-              <!-- Comment Button -->
-              <button class="btn btn-ghost btn-circle">
+              <button class="btn btn-ghost btn-circle" title="Comment count">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
               </button>
-              <span class="ml-2"><%= data.comments.length %> </span>
+              <span class="ml-2"><%= data.comments.length %></span>
             </div>
-            <div class="flex items-center">
+            <div class="flex items-center" title="View count">
               <button class="btn btn-ghost btn-circle">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 </svg>
               </button>
-              <span class="ml-2"><%= data.views %> </span>
+              <span class="ml-2"><%= data.views %></span>
             </div>
           </div>
 
-          <!-- Comment Section -->
           <div class="mt-4">
             <textarea class="textarea textarea-bordered w-full" placeholder="Leave a comment"></textarea>
             <button onclick="postComment()" class="btn btn-ghost mt-2">Post Comment</button>
           </div>
 
-          <!-- Comment List -->
           <div class="mt-4">
             <h3 class="text-lg font-bold">Comments</h3>
-            <div class="mt-2">
+            <div class="mt-2" id="comments-container">
               <% if (comments.length > 0) { %>
                 <% comments.forEach(comment => { %>
-                  <div class="w-full ">
+                  <div class="w-full">
                     <div class="grid comment">
-                    <div class="flex gap-2.5 mb-4">
-                     <img src="https://pagedone.io/asset/uploads/1710412177.png" alt="Shanay image" class="w-10 h-11">
-                     <div class="grid w-100">
-                       <h5 class="text-gray-900 text-sm font-semibold leading-snug pb-1"><%= comment.authorName %></h5>
-                       <div class="w-max grid w-100 ">
-                         <div class="px-3.5 py-2 bg-gray-100 rounded-3xl rounded-tl-none justify-start w-100 items-center gap-3 inline-flex">
-                           <h5 class="text-gray-900 text-sm font-normal leading-snug"><%= comment.content %></h5>
-                         </div>
-                         <div class="justify-end items-center inline-flex mb-2.5">
-                          <div class="flex gap-2">
-                            <%= comment.likes %>
+                      <div class="flex gap-2.5 mb-4">
+                        <img src="/img/avatar.png" alt="User image" class="w-10 h-11">
+                        <div class="grid w-100">
+                          <h5 class="text-gray-900 text-sm font-semibold leading-snug pb-1"><%= comment.authorName %></h5>
+                          <div class="w-max grid w-100">
+                            <div class="px-3.5 py-2 bg-gray-100 rounded-3xl rounded-tl-none justify-start w-100 items-center gap-3 inline-flex">
+                              <h5 class="text-gray-900 text-sm font-normal leading-snug"><%= comment.content %></h5>
+                            </div>
+                            <div class="justify-end items-center inline-flex mb-2.5">
+                              <div class="flex gap-2"><%= comment.likes %></div>
+                              <h6 class="text-gray-500 text-xs font-normal leading-4 py-1">
+                                <small>Published at <strong><%= new Date(comment.createdAt).toLocaleDateString("en-US", {
+                                  month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'
+                                }) %></strong></small>
+                              </h6>
+                            </div>
                           </div>
-                           <h6 class="text-gray-500 text-xs font-normal leading-4 py-1"><small>Published at <strong><%= new Date(data.createdAt).toLocaleDateString("en-US", {
-                            month: 'long',
-                            day: 'numeric',
-                            hour: 'numeric',
-                            minute: 'numeric'
-                          }) %></strong></small></h6>
-                         </div>
-                       </div>
-                     </div>
+                        </div>
+                      </div>
                     </div>
-                    </div>
-                    </div>
+                  </div>
                 <% }) %>
               <% } else { %>
-                <p>No comments yet.</p>
+                <p id="no-comments">No comments yet.</p>
               <% } %>
             </div>
           </div>
         </div>
       </div>
+
+      <div class="mb-8 mt-5">
+        <% Object.entries(contents).forEach(([key, value]) => { %>
+          <a href="/blogs/blog/search?q=<%= encodeURIComponent(value.one_keyword) %>" class="ui tag label"><%- value.one_keyword %></a>
+        <% }); %>
+      </div>
     </div>
   </div>
 
+  <div class="toast fixed bottom-0 left-0" id="notification" style="margin: 20px;">
+    <div class="alert alert-info">
+      <span id="notification-message"></span>
+    </div>
+  </div>
 
   <script>
+    $('.ui.sticky').sticky({ context: '#example1' });
 
-      function postComment(){
-        const comment = document.querySelector('.textarea').value;
+    const notification = document.getElementById('notification');
 
-        if(!comment){
-          return;
-        }
+    async function postComment() {
+      const comment = document.querySelector('.textarea').value.trim();
+      if (!comment) {
+        showNotification("Comment cannot be empty!");
+        return;
+      }
 
-        fetch('/blogs/blog/comments/', {
+      try {
+        const response = await fetch('/blogs/blog/comments/', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             content: comment,
             author: '<%= data.authorMetadata._id %>',
-            post: '<%= data._id %>',
-          })  
-        }).then(res => res.json())
-        .then(data => {
-          console.log(data)
-        }).catch(err => {
-          console.error(err)
-        })
+            post: '<%= data._id %>'
+          })
+        });
+
+        if (response.redirected) {
+          showNotification("Please login to comment!");
+          return;
+        }
+
+        const data = await response.json();
+        if (data) {
+          showNotification("Your message is under review! After review, it will be published.");
+          addCommentToDOM(data.comment);
+          document.querySelector('.textarea').value = '';
+        }
+      } catch (error) {
+        console.error('Error uploading comment:', error);
+        showNotification("Failed to upload comment. Please try again.");
       }
+    }
 
-      function likePost(){
-        fetch('/blogs/blog/like', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            _id: '<%= data._id %>',
-          })  
-        }).then(res => res.json())
-        .then(data => {
-          if(data.success){
-            // Increase the clap by 1
-            document.querySelector('.clap').innerHTML = Number(document.querySelector('.clap').innerHTML) + 1;
-          }
-        }).catch(err => {
-          console.error(err)
-        })
-      }
+    function showNotification(message) {
+      document.getElementById('notification-message').textContent = message;
+      notification.style.display = 'block';
+      setTimeout(() => notification.style.display = 'none', 5000);
+    }
+    function addCommentToDOM(comment) {
+      const commentBox = document.getElementById('comments-container');
+      const commentHTML = `
+        <div class="w-full">
+          <div class="grid comment">
+            <div class="flex gap-2.5 mb-4">
+              <img src="/img/avatar.png" alt="User avatar" class="w-10 h-11">
+              <div class="grid w-100">
+                <h5 class="text-gray-900 text-sm font-semibold leading-snug pb-1">${comment.authorName}</h5>
+                <div class="w-max grid w-100">
+                  <div class="px-3.5 py-2 bg-gray-100 rounded-3xl rounded-tl-none justify-start w-100 items-center gap-3 inline-flex">
+                    <h5 class="text-gray-900 text-sm font-normal leading-snug">${comment.content}</h5>
+                  </div>
+                  <div class="justify-end items-center inline-flex mb-2.5">
+                    <div class="flex gap-2"></div>
+                    <h6 class="text-gray-500 text-xs font-normal leading-4 py-1">
+                      <small>Published at <strong>${new Date().toLocaleDateString("en-US", {
+                        month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'
+                      })}</strong></small>
+                    </h6>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      commentBox.insertAdjacentHTML('beforeend', commentHTML);
+      
+      const noComments = document.getElementById('no-comments');
+      if (noComments) noComments.style.display = 'none';
+    }
 
-  </script>
-
-  <script>
+    function likePost() {
+      fetch('/blogs/blog/like', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ _id: '<%= data._id %>' })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          document.querySelector('.clap').textContent = Number(document.querySelector('.clap').textContent) + 1;
+        }
+      })
+      .catch(console.error);
+    }
 
     function stripHtml(html) {
-      var temporalDivElement = document.createElement("div");
-      temporalDivElement.innerHTML = html;
-      return temporalDivElement.textContent || temporalDivElement.innerText || "";
+      const temporalDiv = document.createElement("div");
+      temporalDiv.innerHTML = html;
+      return temporalDiv.textContent || temporalDiv.innerText || "";
     }
 
     async function fetchImage(query, postContainerId) {
-      const apiKey = "34782797-09ed0e53aefea1bdbbcccd6f0"; // Replace with your Pixabay API key
+      const apiKey = "34782797-09ed0e53aefea1bdbbcccd6f0";
       const url = `https://pixabay.com/api/?key=${apiKey}&q=${encodeURIComponent(query.toLowerCase())}&image_type=photo`;
 
       try {
@@ -209,8 +304,7 @@
         const data = await response.json();
 
         if (data.hits && data.hits.length > 0) {
-          const imageUrl = data.hits[0].webformatURL; // Using the first image found
-          document.querySelector(`#${postContainerId}`).src = imageUrl;
+          document.querySelector(`#${postContainerId}`).src = data.hits[0].webformatURL;
         } else {
           console.error("No images found for query:", query);
         }
@@ -221,23 +315,16 @@
 
     async function loadImages() {
       const contents = <%- JSON.stringify(contents) %>;
-      console.log("Contents:", contents); // Debug log
       for (const [key, value] of Object.entries(contents)) {
-        const query = stripHtml(value.one_keyword);
-        console.log("Fetching image for:", query); // Debug log
-        await fetchImage(query, `post-${key}`);
+        await fetchImage(stripHtml(value.one_keyword), `post-${key}`);
       }
     }
 
-    window.onload = () => {
-      loadImages();
-    };
+    window.onload = loadImages;
 
     const scrollToElement = () => {
       const element = document.querySelector('#scroll-place');
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
+      if (element) element.scrollIntoView({ behavior: 'smooth' });
     };
   </script>
 </body>

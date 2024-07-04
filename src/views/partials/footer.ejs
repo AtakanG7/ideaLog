@@ -1,47 +1,5 @@
-<footer class="footer p-10 bg-base-200 text-base-content mt-5">
-    <nav>
-      <h6 class="footer-title">Services</h6> 
-      <a class="link link-hover">Branding</a>
-      <a class="link link-hover">Design</a>
-      <a class="link link-hover">Marketing</a>
-      <a class="link link-hover">Advertisement</a>
-    </nav> 
-    <nav>
-      <h6 class="footer-title">Company</h6> 
-      <a class="link link-hover">About us</a>
-      <a class="link link-hover">Contact</a>
-      <a class="link link-hover">Jobs</a>
-      <a class="link link-hover">Press kit</a>
-    </nav> 
-    <nav>
-      <h6 class="footer-title">Legal</h6> 
-      <a class="link link-hover">Terms of use</a>
-      <a class="link link-hover">Privacy policy</a>
-      <a href="/users/unsubscribe/" class="link link-hover">Unsubscribe</a>
-    </nav> 
-    <div class="container flex flex-center flex-col">
-
-      <h6 class="footer-title ">Newsletter Subscription</h6> 
-      <button class="btn btn-accent glass" onclick="my_modal_3.showModal()">Subscribe
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
-      </button>
-      <dialog id="my_modal_3" class="modal">
-        <div class="modal-box">
-          <form method="dialog">
-            <button class="btn btn-sm glass btn-circle btn-accent absolute right-2 top-2">✕</button>
-          </form>
-          <h3 class="font-bold text-lg mb-2">Newsletter Subscription</h3>
-          <form action="/users/subscribe/" method="post">
-            <fieldset class="form-control w-80">
-              <label class="label">
-                <span class="label-text">Enter your email address</span>
-              </label> 
-              <input type="text" id="email" name="email" placeholder="username@site.com" class="input input-bordered join-item mb-2" /> 
-              <button class="btn  glass join-item">OK</button>
-            </fieldset>
-          </form>
-        </div>
-      </dialog>
-    </div>
- 
-  </footer>
+<footer class="footer footer-center p-4 bg-base-300 text-base-content flex justify-center align-middle position-relative">
+  <aside>
+    <p>Copyright © <%= new Date().getFullYear() %> - All right reserved by <a class="underline" href="https://atakangul.com">Atakan Gül</a></p>
+  </aside>
+</footer>

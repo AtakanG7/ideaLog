@@ -11,7 +11,6 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js"
-    
   },
   "dependencies": {
     "@flaticon/flaticon-uicons": "^3.2.1",
@@ -32,6 +31,7 @@
     "generate-password": "^1.7.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.3.4",
+    "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.13",
     "nodemon": "^3.1.1",
     "openai": "^4.47.2",
@@ -41,6 +41,7 @@
     "postcss-cli": "^11.0.0",
     "quill": "^2.0.2",
     "redis": "^4.6.13",
+    "sharp": "^0.33.4",
     "tailwindcss": "^3.4.3",
     "tinymce": "^7.1.1",
     "tw-elements": "^2.0.0",

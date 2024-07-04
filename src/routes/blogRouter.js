@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { Blogs } from "../models/blogs.js";
 import { Comments } from "../models/comments.js";
-import { sendTelegramMessage } from "../../apis/telegram.js";
+import { sendTelegramMessage } from "../../apis/services/telegram.js";
 import { blogController } from "../controllers/blogController.js";
 import authControllerMiddleware from "../controllers/authControllers/authControllerMiddlewares.js";
 const authControllerMiddlewares = new authControllerMiddleware();
@@ -12,13 +12,15 @@ const isAdmin = [authControllerMiddlewares.mustBeAdmin];
 // Using express router, creating specific routes
 const router = Router()
 
+router.get("/blog/search", blogController.getRelatedBlogs);
+
 router.get('/blog/:id',  async (req, res) => {
     try {
       let postId = req.params.id;
   
       const data = await Blogs.findById({ _id: postId });
 
-      const comments = await Comments.find({ post: postId });
+      const comments = await Comments.find({ post: postId, verified: true });
       
       // Add view count
       data.views += 1;
@@ -44,7 +46,10 @@ router.get("/create", isAuth, (req, res) => {
     res.render("./pages/blogPostPage", { currentRoute: `/blogs/creation` })
 });
 
-router.post("/", isAuth, blogController.createUserWrittenBlogs);
+router.post("/", isAdmin ,isAuth, (req, res) => {
+  res.render("./pages/failurePage", { notify: "Currently working on this side. Try again later!" });
+  return
+});
 
 router.get("/new/blog/create", isAuth, (req, res) => {
   res.render("./pages/blogPostPage", { currentRoute: `/blogs/creation` })
@@ -69,7 +74,6 @@ router.post("/blog/comments", isAuth , async (req, res) => {
   }
 
   const user = await authControllerMiddlewares.getUserFromSession(req, res);
-  console.log(user)
   const comment = new Comments({
     content: content,
     author: user._id,
@@ -83,7 +87,7 @@ router.post("/blog/comments", isAuth , async (req, res) => {
   blog.comments.push(comment._id);
   await blog.save();
 
-  res.status(200).json({ success: true });
+  res.status(200).json({ success: true, comment: comment });
 });
 
 router.get('/blog/delete/:id', isAuth, isAdmin, async (req, res) => {

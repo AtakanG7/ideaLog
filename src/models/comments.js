@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import db from "../../apis/db/db.js";
 
 // Comment Schema
 const commentSchema = new Schema({
@@ -14,6 +15,6 @@ const commentSchema = new Schema({
 }, { timestamps: true });
 
 // Create models from the schemas
-const Comments = model('Comments', commentSchema);
+const Comments = db.model('Comments', commentSchema);
 
 export { Comments, commentSchema };

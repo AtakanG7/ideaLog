@@ -13,6 +13,7 @@ class Config {
       this.PORT = process.env.PORT; 
       this.GOOGLE_OAUTH2_ID = process.env.GOOGLE_OAUTH2_ID; 
       this.GOOGLE_OAUTH2_SECRET = process.env.GOOGLE_OAUTH2_SECRET; 
+      this.GOOGLE_CALLBACK = process.env.GOOGLE_CALLBACK; 
       this.REDIS_PASSWORD = process.env.REDIS_PASSWORD; 
       this.REDIS_HOST = process.env.REDIS_HOST; 
       this.REDIS_PORT = process.env.REDIS_PORT; 
@@ -22,7 +23,9 @@ class Config {
       this.BREVO_SMTP_PORT = process.env.BREVO_SMTP_PORT; 
       this.MONGODB_NAME = process.env.MONGODB_NAME; 
       this.MONGODB_PASSWORD = process.env.MONGODB_PASSWORD;
-      this.MONGODB_DEPLOYMENT_STRING = process.env.MONGODB_DEPLOYMENT_STRING; 
+      this.MONGODB_DEPLOYMENT_STRING = process.env.MONGODB_DEPLOYMENT_STRING;
+      this.MONGODB_IMAGE_SERVER_DEPLOYMENT_STRING = process.env.MONGODB_IMAGE_SERVER_DEPLOYMENT_STRING;
+      this.MONGODB_IMAGE_SERVER_PASSWORD = process.env.MONGODB_IMAGE_SERVER_PASSWORD;
       this.DOMAIN = process.env.DOMAIN ? `http://${process.env.DOMAIN}` : `http://localhost:${this.PORT}`; 
       this.ADMIN_EMAIL = process.env.ADMIN_EMAIL === undefined ? 'pwxcv7352@gmail.com' : process.env.ADMIN_EMAIL; 
       this.TELEGRAM_API_BASE_URL = process.env.TELEGRAM_API_BASE_URL; 

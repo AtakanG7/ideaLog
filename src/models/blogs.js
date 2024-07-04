@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import db from "../../apis/db/db.js";
 
 // Blog Post Schema
 const blogSchema = new Schema({
@@ -16,7 +17,7 @@ const blogSchema = new Schema({
 }, { timestamps: true });
 
 // Create models from the schemas
-const Blogs = model('Blogs', blogSchema);
+const Blogs = db.model('Blogs', blogSchema);
 
 export { Blogs, blogSchema };
 

@@ -1,11 +1,13 @@
 import { Schema, model } from 'mongoose';
+import db from "../../apis/db/db.js";
 
 // User Schema
 const userSchema = new Schema(
   {
     email: { type: String, lowercase: true, required: true },
     password: { type: String, required: true },
-    isSubscribed: { type: Boolean, required: true, default: false },
+    imageURL: { type: String, default: '/img/avatar.png' },
+    isSubscribed: { type: Boolean, required: false, default: false },
     googleId: { type: String },
     name: { type: String },
     role: { type: String, enum: ['admin', 'user'], default: 'user' },
@@ -17,6 +19,6 @@ const userSchema = new Schema(
 );
 
 // Create models from the schemas
-const Users = model('Users', userSchema);
+const Users = db.model('Users', userSchema);
 
 export { Users, userSchema };

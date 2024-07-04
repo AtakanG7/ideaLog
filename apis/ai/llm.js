@@ -1,5 +1,5 @@
-import { sendTelegramMessage } from './telegram.js';
-import Config from '../config/config.js';
+import { sendTelegramMessage } from '../services/telegram.js';
+import Config from '../../config/config.js';
 import { OpenAI } from 'openai';
 import axios from 'axios';
 // Initialize configuration
@@ -76,14 +76,38 @@ async function startAIPostCreation(query) {
       return;
     }
 
-    const promptDirectives = `You are a professional blogger. You have a different taste of humor in blogging you always try to use easy words and
-    engaging funny sentences.
-  
-    Keep the content enjoyable and easy to read. Try to put some excitement into sentences. 
-    Who cares telling boring stories and boring words, keep it simple and make fun of the subject and keep it in taste.`
+    const promptDirectives = `You are an experienced professional blogger with a unique, playful sense of humor. Your blog posts are characterized by:
+
+      Simple, conversational language that avoids jargon and complex words
+      Highly engaging writing with plenty of witty, humorous phrasing
+      Short, punchy sentences that keep the reader's interest
+      An irreverent, fun tone that gently pokes fun at the subject matter while still remaining good-natured
+
+      Your goal is to take potentially dry or boring topics and make them incredibly entertaining to read through your clever writing style. You have a knack for injecting excitement and hilarity into the most mundane subjects.
+      Rather than just dryly stating facts, you want to tell an amusing story or narrative around the topic. Don't be afraid to be bold with your humor - the more outrageous the better, as long as it's all in good fun. Just be sure to keep things relatively family-friendly without veering into offensiveness.
+      The end result should be blog posts that are an absolute joy to read from start to finish, leaving the reader entertained, enlightened and eager to read more of your wonderfully amusing work. Aim for posts of at least 500 words that really allow you to flex your comedic writing chops.`
+
+    
+    const expectedOutputFormat = `{
+      "1": {
+        "title": "Title of the first segment of the blog post",
+        "content": "Content of the first segment of the blog post quotes,lists,orders,code block,headers,sections,main content, and more you can use. You have access to daisy ui classes.",
+        "one_keyword": "Best keyword of the first segment of the blog post"
+      },
+      "2": {
+        "title": "Title of the second segment of the blog post",
+        "content": "Content of the second segment of the blog post quotes,lists,orders,code block,headers,sections,main content, and more you can use. You have access to daisy ui classes.",
+        "one_keyword": "Best keyword of the second segment of the blog post"
+      },
+      "3": {
+        "title": "Title of the third segment of the blog post",
+        "content": "Content of the third segment of the blog post quotes,lists,orders,code block,headers,sections,main content, and more you can use. You have access to daisy ui classes.",
+        "one_keyword": "Best keyword of the third segment of the blog post"
+      } ... (if there are more segments in the article you can add them here)
+    }`
 
     // Blog Post Content
-    const blogPostContent = await getAICreatedBlogPost(promptDirectives, articles);
+    const blogPostContent = await getAICreatedBlogPost(promptDirectives, expectedOutputFormat, articles);
     sendTelegramMessage('Blog Post Content:\n' + blogPostContent);
     
     // Blog Post Title
@@ -117,11 +141,38 @@ async function startAIPostCreation(query) {
 
 async function startUserPostCreation(content) {
   try {
-    const promptDirectives = `Your task is rewrite the given blog post without changing the meanings and logics. 
-    put the given content in a requested shape. The output will be disccussed now.`
+    const promptDirectives = `Rewrite the given blog post without changing any word. Your task only to put the given content into structure and segmented format.
+    You are allowed to use html tags in your content. This is super important to do! If there is a code in the given blog use code tags. If there is a content 
+    that can be ordered or bullet use ordered list tags. Keep the content in good flow. use strong tags for bold text. You are allowed to use as much as you can to make
+    the content easy to read! You can use bootstrap to manipulate the text. 
+    
+    If the given content has a segment with a related image url include the url with the field 'image_url' into the segment. If not you can simply not put the image_url
+    fielf for the corresponding segment.
+    `
+
+    const expectedOutputFormat = `{
+      "1": {
+        "title": "Title of the first segment of the blog post",
+        "content": "Content of the first segment of the blog post quotes,lists,orders,code block,headers,sections,main content, and more you can use. You have access to daisy ui classes.",
+        "one_keyword": "Best keyword of the first segment of the blog post"
+        "image_url":"image url of the first segment of the blog post"
+      },
+      "2": {
+        "title": "Title of the second segment of the blog post",
+        "content": "Content of the second segment of the blog post quotes,lists,orders,code block,headers,sections,main content, and more you can use. You have access to daisy ui classes.",
+        "one_keyword": "Best keyword of the second segment of the blog post"
+        "image_url":"image url of the second segment of the blog post"
+      },
+      "3": {
+        "title": "Title of the third segment of the blog post",
+        "content": "Content of the third segment of the blog post quotes,lists,orders,code block,headers,sections,main content, and more you can use. You have access to daisy ui classes.",
+        "one_keyword": "Best keyword of the third segment of the blog post"
+        "image_url":"image url of the third segment of the blog post"
+      } ... (if there are more segments in the article you can add them here)
+    }`
 
     // Blog Post Content
-    const blogPostContent = await getAICreatedBlogPost(promptDirectives, content);
+    const blogPostContent = await getAICreatedBlogPost(promptDirectives, expectedOutputFormat, content);
     
     // Blog Post Title
     const blogPostTitle = await getBlogPostTitle(blogPostContent);
@@ -152,7 +203,7 @@ async function startUserPostCreation(content) {
   }
 }
 
-async function getAICreatedBlogPost(directives ,articles, isCheapTask = false) {
+async function getAICreatedBlogPost(directives ,articles, expectedOutputFormat, isCheapTask = true) {
 
   const prompt = `${directives}
 
@@ -161,23 +212,7 @@ async function getAICreatedBlogPost(directives ,articles, isCheapTask = false) {
   The content itself should be in the JSON format.
 
   How output looks like:
-  {
-    "1": {
-      "title": "Title of the first segment of the blog post",
-      "content": "Content of the first segment of the blog post quotes,lists,orders,code block,headers,sections,main content, and more you can use. You have access to daisy ui classes.",
-      "one_keyword": "Best keyword of the first segment of the blog post"
-    },
-    "2": {
-      "title": "Title of the second segment of the blog post",
-      "content": "Content of the second segment of the blog post quotes,lists,orders,code block,headers,sections,main content, and more you can use. You have access to daisy ui classes.",
-      "one_keyword": "Best keyword of the second segment of the blog post"
-    },
-    "3": {
-      "title": "Title of the third segment of the blog post",
-      "content": "Content of the third segment of the blog post quotes,lists,orders,code block,headers,sections,main content, and more you can use. You have access to daisy ui classes.",
-      "one_keyword": "Best keyword of the third segment of the blog post"
-    } ... (if there are more segments in the article you can add them here)
-  }
+  ${expectedOutputFormat}
 
   Described output format is json format. You are expected to write your blog post in json format. Put the post into meaningful chunks or segments. 
   Depend on the given articales don't go yourself and get out of the way. Let's start, Here are the articles to write blog on ${articles}
@@ -198,7 +233,11 @@ async function getImportantKeywords(content, isCheapTask = true) {
     content: {
       "...": "\\n\\"description\\":\\"Stay up-to-date with the latest tech trends and reviews in the tech world with this vibrant and exciting blog post. From UNOX Ovens to HitPaw Video Converter, Marvell stock to Hamamatsu Photonics, and big tech companies forming Ultra Accelerator Link group, get ready to dive into the world of technology like never before!\\",\\n\\"content\\": {\\n\\"segment1\\": \\"<h2>UNOX Ovens Lounge Launch in Guwahati</h2><p>Exciting news! UNOX, a leading Italian brand, has launched UNOX Lounge in Guwahati. This is a major milestone for the brand, following successful launches in Goa and Mumbai. With top-notch Italian technology, UNOX Ovens are set to revolutionize cooking experiences. Read more <a href='#'>here</a>.</p>\\",\\n\\"segment2\\": \\"<h2>HitPaw Video Converter V4.2.0 - What's New?</h2><p>HitPaw introduces the latest software version - HitPaw Video Converter V4.2.0. This update brings exciting new features like video download and music conversion. Enrich your life with HitPaw's innovative software. Learn more <a href='#'>here</a>.</p>\\",\\n\\"segment3\\":\\"<h2>Marvell Stock Update - What's in Store?</h2><p>Despite a sales dip, Marvell Technology Group Ltd. maintains a strong buy rating with a target of $94. Find out more about Marvell's performance in the market and what analysts have to say. Dive deeper <a href='#'>here</a>.</p>\\",\\n\\"segment4\\":\\"<h2>Best Smokeless Indoor Grills for 2024</h2><p>Summer is here, and it's time for grilling season! Explore the 6 best smokeless indoor grills for 2024. Whether you're a grilling enthusiast or a novice, these grills are sure to elevate your BBQ game. Get grilling <a href='#'>here</a>.</p>\\",\\n\\"segment5\\":\\"<h2>Hamamatsu Photonics Acquisition of NKT Photonics</h2><p>Exciting news! Hamamatsu Photonics has completed the acquisition of NKT Photonics A/S. This strategic move is set to enhance the capabilities of both companies in the photonics industry. Learn more <a href='#'>here</a>.</p>\\"\\n},\\n\\"author\\": \\"AItakan\\"\\n"
     }
-    Expected output: UNOX, Ovens, Lounge, Launch, Guwahati, Italian, Technology, Cooking, Goa, Mumbai, HitPaw, Video, Converter, V4.2.0, Update, Features, Download, Music, Conversion, Software, Marvell, Stock, Update, Sales, Technology, Buy, Rating, Target, Performance, Analysts, Smokeless, Indoor, Grills, 2024, Summer, Grilling, BBQ, Enthusiast, Novice, Hamamatsu, Photonics, Acquisition, NKT, Industry, Strategic, Companies, Capabilities
+
+    You should be careful about the order. Start from the most significant to the least significant. In your first keyword make sure you decide that
+    the keyword really describes the content with one or two words.
+
+    Expected output: Tech trends, UNOX Ovens, HitPaw Video Converter, Marvell stock, Hamamatsu Photonics, UNOX Lounge, HitPaw Video Converter V4.2.0, Marvell Technology, best indoor grills, Hamamatsu Photonics acquisition, AItakan.
     
     content: ${content}
     

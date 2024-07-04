@@ -1,7 +1,7 @@
 
 import bcrypt from "bcrypt"
 import { Users } from "../../models/users.js";
-import { sendTelegramMessage } from "../../../apis/telegram.js";
+import { sendTelegramMessage } from "../../../apis/services/telegram.js";
 import authControllerMiddlewares from "./authControllerMiddlewares.js";
 
 const authControllerMiddleware = new authControllerMiddlewares();
@@ -15,7 +15,7 @@ class loginController {
                     return next(err);
                 }
                 res.clearCookie('authToken');
-                res.status(200).redirect('/login');
+                res.status(200).redirect('/');
             });
         } catch (err) {
             sendTelegramMessage(`[Error] ${err.message}`);

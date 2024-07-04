@@ -85,44 +85,11 @@
         <%- include('../partials/headers/headerUnAuth.ejs') %>
       <% } %>
 
-      <div class="ui container flex flex-col justify-center items-center pt-3" >
-        <div class="w-100 h-32 bg-white rounded-lg overflow-hidden shadow-lg position-relative profile-banner-mobile" style="overflow: visible !important;">
-            <img loading="lazy" src="/img/banner.jpg" alt="Profile Image" class="w-full h-full rounded-lg">
-            <img loading="lazy"  class="profile-img-custom" src="/img/profile-pic.jpg">
-        </div>
-        <% if (!user.isSubscribed) { %>
-        <div class="ui container flex justify-center before">
-          <h1 class="text-center w-100 text-3xl mt-4 ubuntu-light" style="font-size: 2rem;">Hi there!</h1>
-        </div>
-          <div class="row w-full ">
-            <div class="col-12 flex justify-center items-center">
-              <img loading="lazy"  src="/img/sub-text.png" style="filter: contrast(100);">
-            </div>
-          </div>
-        <% } else { %>
-          <div class="ui container flex justify-center before">
-            <h1 class="text-center w-100 text-3xl mt-4 ubuntu-light" style="font-size: 2rem;">Welcome back my friend :)</h1>
-          </div>
-        <% } %>
-        
-      </div>
-      <% if (!user.isSubscribed) { %>
-        <div class="ui container my-4 py-4">
-          <form class="flex justify-center form-custom" action="/users/subscribe/" method="post">
-              <div class="ui action input m-0 p-0" style="border: 2px solid #FFD700; border-radius: 5px;">
-                <input type="email" placeholder="<%= user.email %>" value="<%= user.email %>" name="email" id="email"  style="width: 17rem;" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
-                <button class="ui button yellow text-dark">Subscribe</button>
-              </div>
-          </form>
-        </div>
-      <% } else %>
-      
-
 
       <div class="ui container">
         <div class="ui container w-100 my-5 ml-0 px-0" id="scroll-place">
           <article class="prose lg:prose-xl m-0">
-            <h2 class="py-2 px-3 flex justify-start rounded-lg" style="background-color: #FFD700; width: fit-content;">Latest Blogs</h2>
+            <h2 class="py-2 px-3 flex justify-start rounded-lg" style="background-color: #FFD700; width: fit-content;">All Blogs</h2>
           </article>
         </div>
         <div class="row mx-5 ui stackable grid" style="margin: 0;"> 

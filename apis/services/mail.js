@@ -1,8 +1,8 @@
 import nodemailer from 'nodemailer';
-import Config from '../config/config.js'; // Configuration file
-import { Blogs } from '../src/models/blogs.js';
+import Config from '../../config/config.js'; // Configuration file
+import { Blogs } from '../../src/models/blogs.js';
 import axios from 'axios';
-import { sendTelegramMessage } from './telegram.js';
+import { sendTelegramMessage } from '../services/telegram.js';
 // Initializing the configuration file
 const keyValt = new Config();
 

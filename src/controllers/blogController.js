@@ -1,7 +1,7 @@
 import { Blogs } from "../models/blogs.js";
 import { Users } from "../models/users.js";
-import { sendTelegramMessage } from "../../apis/telegram.js";
-import { startAIPostCreation, startUserPostCreation } from "../../apis/llm.js";
+import { sendTelegramMessage } from "../../apis/services/telegram.js";
+import { startAIPostCreation, startUserPostCreation } from "../../apis/ai/llm.js";
 import AuthController from "../controllers/authControllers/authController.js";
 const authController = new AuthController();
 /**
@@ -49,8 +49,30 @@ export const  blogController = {
      * @param {Object} res - The response object
      */
     getAllBlogs: async (req, res) => {
-        const blogs = await Blogs.find();   
-        res.render("./pages/blogPage.ejs", { blogs });
+        let perPage = 9;
+        let page = req.query.page || 1;
+        
+
+        const data = await Blogs
+            .find()
+            .sort({ createdAt: -1 })
+            .skip(perPage * (page - 1))
+            .limit(perPage)
+            .exec();
+    
+        // Count is deprecated - please use countDocuments
+        // const count = await Post.count();
+        const count = await Blogs.countDocuments({});
+        const nextPage = parseInt(page) + 1;
+        const hasNextPage = nextPage <= Math.ceil(count / perPage);
+    
+        res.render('../views/pages/dashboardPage', { 
+          data,
+          current: page,
+          blogCount: count,
+          nextPage: hasNextPage ? nextPage : null,
+          currentRoute: '/dashboard',
+        });
     },
 
     /**
@@ -77,7 +99,7 @@ export const  blogController = {
 
     // Get blogs with the status published. Crete the function.
     getPublishedBlogs: async (req, res) => {
-        let perPage = 10;
+        let perPage = 9;
         let page = req.query.page || 1;
         
 
@@ -138,7 +160,7 @@ export const  blogController = {
 
     createUserWrittenBlogs: async (req, res) => {
         try {
-            sendTelegramMessage(`[INFO] Starting user blog creation...`);
+            sendTelegramMessage(`[INFO] Starting user blog creation... after `);
             
             // Get blog post required metadata minus authorMetadata
             const blogPostRequiredMetadata = await startUserPostCreation(req.body.content)
@@ -170,5 +192,22 @@ export const  blogController = {
             });
         }
     },
+
+    getRelatedBlogs: async (req, res) => {
+        try {
+            const result = await Blogs.find({ $text: { $search: req.query.q } });
+
+            res.render('./pages/searchResultPage.ejs', {
+                data: result,
+                currentRoute: `/blogs/search/${req.query.q}`,
+                q: req.query.q,
+            })
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: error.message
+            });
+        }
+    }
 }
 
