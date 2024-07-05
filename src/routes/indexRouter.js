@@ -5,16 +5,16 @@ import { blogController } from "../controllers/blogController.js";
 import { userController } from "../controllers/userController.js";
 const authController = new AuthController();
 
-const adminRules = [authController.authControllerMiddlewares.isAdmin];
+const isAuth = [authController.authControllerMiddlewares.mustAuthenticated];
+const isAdmin = [authController.authControllerMiddlewares.mustBeAdmin];
 // Using express router, creating specific routes
 const router = Router()
-
 // Route to render dashboard page
-router.get('/dashboard', blogController.getAllBlogs)
-
+router.get('/dashboard', isAdmin, blogController.getAllBlogs)
+  
 router.get('/a', (req, res) => {
     res.render("./pages/try.ejs", { currentRoute: '/a' });
-  });
+});
 
 // Route to render index.ejs
 router.get("/", blogController.getPublishedBlogs);
@@ -49,8 +49,6 @@ router.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login', session: false }),
   async function(req, res) {
       // Successful authentication, redirect home.
-    console.log("works")
-    console.log(req.user)
     await authController.authControllerMiddlewares.createSession(req, res, req.user);
     res.redirect('/');
 }, 

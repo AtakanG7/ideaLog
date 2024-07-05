@@ -96,20 +96,20 @@
           <% data.forEach(post => { %>
             <div class="col-12 col-md-6 col-lg-4 mb-3">
               <div class="ui fluid card">
-                <a href="/blogs/blog/<%= post._id %>" class="ui fluid image">
+                <a href="/blogs/<%= post.url %>" class="ui fluid image">
                     <div class="ui yellow ribbon label">
                       <p class="text-dark"><%- post.authorMetadata ? (post.authorMetadata.name === "AItakan" ? 'AI Created' : post.authorMetadata.name || post.authorMetadata.email ) : '' %></p>
                     </div>
                     <img
                     loading="lazy" 
-                    id="post-<%= post._id %>"
+                    id="post-<%= post.url %>"
                     src="<%= post.image || '/img/profile-pic.png' %>"
                     alt="<%= post.title %>"
                     style="height: 200px; object-fit: cover; width: 100%;"
                   >
                 </a>
                 <div class="content">
-                  <a href="/blogs/blog/<%= post._id %>" class="header"><%= post.title %></a>
+                  <a href="/blogs/<%= post.url %>" class="header"><%= post.title %></a>
                   <div class="meta">
                     <span class="date">Published on <%= post.createdAt.toLocaleDateString("en-US", {
                       weekday: 'long',

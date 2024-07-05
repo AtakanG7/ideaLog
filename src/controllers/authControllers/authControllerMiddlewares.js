@@ -37,14 +37,13 @@ class authControllerMiddlewares{
             } catch (err) {
                 // If there's an error (e.g., invalid token, expired token), handle it
                 sendTelegramMessage(`[Error] ${err.message}`);
-                res.status(500).json({ message: 'Internal Server Error' });
+                res.status(500).redirect('/login');
             }
         }
         
         // Checks if user is admin
         async mustBeAdmin(req, res, next) {
             try {
-
                 // Check if cookie is present
                 if (!req.headers.cookie) {
                     return res.status(401).redirect('/login');
@@ -57,10 +56,10 @@ class authControllerMiddlewares{
                 if (!token) {
                     return res.status(401).redirect('/login');
                 }
-            
+                
                 // Decode the JWT and verify the JWT
                 const decoded = jwt.verify(token, keyValt.SECRET_KEY);
-                
+
                 // Check if the user's role is 'admin'
                 if (decoded.role === 'admin') {
                     // Set it in res locals
@@ -69,16 +68,16 @@ class authControllerMiddlewares{
                     return next();
                 } else {
                     // If the user is not an admin, return a 403 Forbidden error
-                    return res.status(403).redirect('/login');
+                    return res.redirect('/login');
                 }
-                } catch (err) {
-                    // If there's an error (e.g., invalid token, expired token), handle it
-                    sendTelegramMessage(`[Error] ${err.message}`);
-                    res.status(500).json({ message: 'Internal Server Error' });
-                }
+            } catch (err) {
+                // If there's an error (e.g., invalid token, expired token), handle it
+                sendTelegramMessage(`[Error] ${err.message}`);
+                res.status(500).redirect('/login');
+            }
         }
 
-        async isAdmin(req, res) {
+        async isAdmin(req, res, next) {
             try {
                 // Check if cookie is present
                 if (!req.headers.cookie) {

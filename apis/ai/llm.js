@@ -37,6 +37,22 @@ async function fetchLatestTechNews(query) {
     }
 }
 
+function getBlogPostURL(title) {
+    // Convert the title to lowercase and replace spaces with hyphens
+    let url = title.toLowerCase().replace(/\s+/g, '-');
+    
+    // Remove special characters and symbols
+    url = url.replace(/[^\w-]+/g, '');
+    
+    // Remove consecutive hyphens
+    url = url.replace(/--+/g, '-');
+    
+    // Remove leading and trailing hyphens
+    url = url.replace(/^-+|-+$/g, '');
+    
+    return url;
+}
+
 /**
  * Generate a blog post using OpenAI GPT-3.5-turbo
  * @param {string} prompt - The prompt to send to the OpenAI API
@@ -114,6 +130,10 @@ async function startAIPostCreation(query) {
     const blogPostTitle = await getBlogPostTitle(blogPostContent);
     sendTelegramMessage('Blog Post Title:\n' + blogPostTitle);
 
+    // Blog Post webFriendlyURL
+    const webFriendlyURL = await getBlogPostURL(blogPostTitle);
+    sendTelegramMessage('Blog Post webFriendlyURL:\n' + webFriendlyURL);
+
     // Blog Post Description
     const blogPostDescription = await getBlogPostDescription(blogPostContent);
     sendTelegramMessage('Blog Post Description:\n' + blogPostDescription);
@@ -126,6 +146,7 @@ async function startAIPostCreation(query) {
 
     sendTelegramMessage('Important Keywords:\n' + importantKeywords);
     return ({
+      url: webFriendlyURL,
       title: blogPostTitle,
       content: blogPostContent,
       description: blogPostDescription,
@@ -178,6 +199,10 @@ async function startUserPostCreation(content) {
     const blogPostTitle = await getBlogPostTitle(blogPostContent);
     sendTelegramMessage('Blog Post Title:\n' + blogPostTitle);
 
+    // Blog Post webFriendlyURL
+    const webFriendlyURL = await getBlogPostURL(blogPostTitle);
+    sendTelegramMessage('Blog Post webFriendlyURL:\n' + webFriendlyURL);
+
     // Blog Post Description
     const blogPostDescription = await getBlogPostDescription(blogPostContent);
     sendTelegramMessage('Blog Post Description:\n' + blogPostDescription);
@@ -190,6 +215,7 @@ async function startUserPostCreation(content) {
 
     sendTelegramMessage('Important Keywords:\n' + importantKeywords);
     return ({
+      url: webFriendlyURL,
       title: blogPostTitle,
       content: blogPostContent,
       description: blogPostDescription,

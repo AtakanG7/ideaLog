@@ -3,6 +3,7 @@ import db from "../../apis/db/db.js";
 
 // Blog Post Schema
 const blogSchema = new Schema({
+    url: { type: String, required: true }, //REQUIRED!!!
     title: { type: String, required: true }, //REQUIRED!!!
     content: { type: String, required: true }, //REQUIRED!!!
     description: { type: String, required: true }, //REQUIRED!!!

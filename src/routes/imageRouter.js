@@ -112,7 +112,6 @@ router.post('/upload', upload.single('image'), async (req, res) => {
 });
 
 router.post("/upload/single", upload.single("file"), (req, res) => {
-    console.log(req.file);
     return res.send("Single file");
 });
 

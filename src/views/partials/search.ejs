@@ -18,7 +18,7 @@
   }
 
   .content-custom {
-    width: 80%;
+    width: 100%;
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -40,7 +40,7 @@
 <div id="seacrhBar" class="searchBar p-5 w-100" style="display: none;">
   <div class="m-auto d-flex flex-col items-center justify-center w-100">
     <div class="flex flex-row items-center justify-center no-wrap">
-      <label class="input input-bordered flex items-center w-75 gap-2">
+      <label class="input input-bordered flex items-center gap-2">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4 opacity-70"><path fill-rule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clip-rule="evenodd" /></svg>
         <input onkeydown="event.key === 'Enter' && fetchArticales()"
           class="w-100 grow"
@@ -87,7 +87,7 @@
 
   // Fetch the articales by fetching server with the values
   async function fetchArticales() {
-    const response = await fetch('/blogs/search?search=' + decodeURI(searchInput.value));
+    const response = await fetch(`/blogs/q?q=${searchInput.value}`);
     const data = await response.json();
     console.log(data)
     sent = false;
@@ -100,7 +100,7 @@
           <div class="card shadow-lg compact bg-white text-black my-2 ">
             <div class="card-body d-flex justify-content-between">
               <div>
-                <a href="/blogs/blog/${article._id}" class="text-lg text-dark font-bold hover:text-blue-600 hover:text-blue-700 hover:underline">
+                <a href="/blogs/${article.url}" class="text-lg text-dark font-bold hover:text-blue-600 hover:text-blue-700 hover:underline">
                   ${article.title} - <span class="text-muted">${article.authorMetadata.name}</span>
                 </a>
                 <p class="text-sm">${article.description}</p>
@@ -116,8 +116,4 @@
         `;
       });
   }
-
-
-
-
 </script>

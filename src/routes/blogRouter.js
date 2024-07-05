@@ -12,22 +12,34 @@ const isAdmin = [authControllerMiddlewares.mustBeAdmin];
 // Using express router, creating specific routes
 const router = Router()
 
-router.get("/blog/search", blogController.getRelatedBlogs);
+router.get("/q", async (req, res) => {
+  const search = req.query.q;
+  console.log(search);
+  // find the blog with the text
+  const result = await Blogs.find({ $text: { $search: search } }).limit(10);
+  res.json(result);
+});
 
-router.get('/blog/:id',  async (req, res) => {
+router.get("/create", isAuth, (req, res) => {
+  res.render("./pages/blogPostPage", { currentRoute: `/blogs/creation` })
+});
+
+router.get("/search", blogController.getRelatedBlogs);
+
+router.get('/:url',  async (req, res) => {
     try {
-      let postId = req.params.id;
+      let postURL = req.params.url;
   
-      const data = await Blogs.findById({ _id: postId });
+      const post = await Blogs.findOne({ url: postURL });
 
-      const comments = await Comments.find({ post: postId, verified: true });
+      const comments = await Comments.find({ post: post._id, verified: true });
       
       // Add view count
-      data.views += 1;
-      await data.save();
+      post.views += 1;
+      await post.save();
 
       res.render('./pages/blogPage', {
-        data:data,
+        data:post,
         comments: comments,
         currentRoute: `/blogs`
       });
@@ -42,10 +54,6 @@ router.get("/update/:id", isAuth, isAdmin, (req, res) => {
     res.render("./pages/blogEditPage", { id: Number(id), currentRoute: `/blogs/update/post_id-${id}` })
 });
 
-router.get("/create", isAuth, (req, res) => {
-    res.render("./pages/blogPostPage", { currentRoute: `/blogs/creation` })
-});
-
 router.post("/", isAdmin ,isAuth, (req, res) => {
   res.render("./pages/failurePage", { notify: "Currently working on this side. Try again later!" });
   return
@@ -55,17 +63,9 @@ router.get("/new/blog/create", isAuth, (req, res) => {
   res.render("./pages/blogPostPage", { currentRoute: `/blogs/creation` })
 });
 
-// Create a route to make text search on mongo db blogs collection starts
-router.get("/search", async (req, res) => {
-  const search = req.query.search;
-  // find the blog with the text
-  const result = await Blogs.find({ $text: { $search: search } });
-  res.json(result);
-});
-
 router.get("/ai/:id", isAuth, isAdmin, blogController.createAIGeneratedBlogs);
 
-router.post("/blog/comments", isAuth , async (req, res) => {
+router.post("/comments", isAuth , async (req, res) => {
   const { content, author, post} = req.body;
   
   if (!content || !author || !post) {
@@ -90,13 +90,13 @@ router.post("/blog/comments", isAuth , async (req, res) => {
   res.status(200).json({ success: true, comment: comment });
 });
 
-router.get('/blog/delete/:id', isAuth, isAdmin, async (req, res) => {
+router.get('/delete/:id', isAuth, isAdmin, async (req, res) => {
   const { id } = req.params;
   await Blogs.findByIdAndDelete(id);
   res.redirect('/blogs'); 
 });
 
-router.post('/blog/like', async (req, res) => {
+router.post('/like', async (req, res) => {
   const { _id } = req.body;
   const blog = await Blogs.findById(_id);
   blog.likes += 1;

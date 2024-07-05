@@ -87,12 +87,11 @@
 
       <div class="ui container flex flex-col justify-center items-center pt-3" >
         <div class="w-100 h-32 bg-white rounded-lg overflow-hidden shadow-lg position-relative profile-banner-mobile" style="overflow: visible !important;">
-            <img loading="lazy" src="/img/banner.jpg" alt="Profile Image" class="w-full h-full rounded-lg">
-            <img loading="lazy"  class="profile-img-custom" src="/img/profile-pic.jpg">
+            <img loading="lazy" src="/img/banner.jpeg" alt="Profile Image" class="w-full h-full rounded-lg">
+            <img loading="lazy"  class="profile-img-custom" src="/img/avatar.jpeg">
         </div>
         <% if (!user.isSubscribed) { %>
         <div class="ui container flex justify-center before">
-          <h1 class="text-center w-100 text-3xl mt-4 ubuntu-light" style="font-size: 2rem;">Hi there!</h1>
         </div>
           <div class="row w-full ">
             <div class="col-12 flex justify-center items-center">
@@ -129,7 +128,7 @@
           <% data.forEach(post => { %>
             <div class="col-12 col-md-6 col-lg-4 mb-3">
               <div class="ui fluid card">
-                <a href="/blogs/blog/<%= post._id %>" class="ui fluid image">
+                <a href="/blogs/<%= post.url %>" class="ui fluid image">
                     <div class="ui yellow ribbon label">
                       <p class="text-dark"><%- post.authorMetadata ? (post.authorMetadata.name === "AItakan" ? 'AI Created' : post.authorMetadata.name || post.authorMetadata.email ) : '' %></p>
                     </div>
@@ -142,7 +141,7 @@
                   >
                 </a>
                 <div class="content">
-                  <a href="/blogs/blog/<%= post._id %>" class="header"><%= post.title %></a>
+                  <a href="/blogs/<%= post.url %>" class="header"><%= post.title %></a>
                   <div class="meta">
                     <span class="date">Published on <%= post.createdAt.toLocaleDateString("en-US", {
                       weekday: 'long',
