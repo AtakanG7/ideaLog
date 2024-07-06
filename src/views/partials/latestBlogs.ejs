@@ -1,0 +1,64 @@
+
+<div class="ui container">
+    <div class="ui container w-100 my-5 ml-0 px-0" id="scroll-place">
+      <article class="prose lg:prose-xl m-0">
+        <h2 class="py-2 px-3 flex justify-start rounded-lg" style="background-color: #FFD700; width: fit-content;">Latest Blogs</h2>
+      </article>
+    </div>
+    <div class="row mx-5 ui stackable grid" style="margin: 0;"> 
+      <% data.forEach(post => { %>
+        <div class="col-12 col-md-6 col-lg-4 mb-3">
+          <div class="ui fluid card">
+            <a href="/blogs/<%= post.url %>" class="ui fluid image">
+                <div class="ui yellow ribbon label">
+                  <p class="text-dark"><%- post.authorMetadata ? (post.authorMetadata.name === "AItakan" ? 'AI Created' : post.authorMetadata.name || post.authorMetadata.email ) : '' %></p>
+                </div>
+                <img
+                loading="lazy" 
+                id="post-<%= post._id %>"
+                src="<%= post.image || '/img/404.jpeg' %>"
+                alt="<%= post.title %>"
+                style="height: 200px; object-fit: cover; width: 100%;"
+              >
+            </a>
+            <div class="content">
+              <a href="/blogs/<%= post.url %>" class="header"><%= post.title %></a>
+              <div class="meta">
+                <span class="date">Published on <%= post.createdAt.toLocaleDateString("en-US", {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                }) %></span>
+              </div>
+              <div class="description">
+                <%= post.description.length > 100 ? post.description.substring(0, 100) + "..." : post.description %>
+              </div>
+            </div>
+            <div class="extra content">
+              <a>
+                <i class="like icon"></i>
+                <%= post.likes %> Likes
+              </a>
+              <a>
+                <i class="comment icon"></i>
+                <%= post.comments.length %> Comments
+              </a>
+              <a>
+                <i class="eye icon"></i>
+                <%= post.views %> Views
+              </a>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+
+    <% if (nextPage !== null) { %>
+      <div class="container mx-5 my-10">
+        <div class="ui pagination menu">
+          <a href="/?page=<%= nextPage %>" class="item">&lt; View Older Posts</a>
+        </div>
+      </div>
+    <% } %>
+  </div>

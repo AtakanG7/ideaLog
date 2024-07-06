@@ -9,13 +9,10 @@ const isAuth = [authController.authControllerMiddlewares.mustAuthenticated];
 const isAdmin = [authController.authControllerMiddlewares.mustBeAdmin];
 // Using express router, creating specific routes
 const router = Router()
+
 // Route to render dashboard page
 router.get('/dashboard', isAdmin, blogController.getAllBlogs)
   
-router.get('/a', (req, res) => {
-    res.render("./pages/try.ejs", { currentRoute: '/a' });
-});
-
 // Route to render index.ejs
 router.get("/", blogController.getPublishedBlogs);
 

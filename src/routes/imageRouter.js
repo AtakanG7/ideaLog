@@ -4,6 +4,7 @@ import multer from "multer";
 import fs from "fs";
 import path from "path";
 import crypto from "crypto";
+import sharp from "sharp";
 
 // Using express router, creating specific routes
 const router = Router();
@@ -33,7 +34,7 @@ const storage = multer.diskStorage({
 });
 
 // Initialize upload variable with the storage engine
-const upload = multer({ storage: storage, limits: { fileSize: 500 * 1024 } }); // Limit file size to 500 KB
+const upload = multer({ storage ,limits: { fileSize: 500 * 1024 } }); // Limit file size to 500 KB
 
 export async function restoreUploadsFolder() {
   // Fetch all images from MongoDB, sorted by date
@@ -51,64 +52,105 @@ export async function restoreUploadsFolder() {
 
     // Check if the directory exists, and if not, create it
     if (!fs.existsSync(dirPath)) {
-      fs.mkdirSync(dirPath, { recursive: true });
+      await new Promise((resolve, reject) => {
+        fs.mkdirSync(dirPath, { recursive: true }, (err) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve();
+          }
+        });
+      });
     }
 
     // Write the image data to a file in the directory
     const filePath = path.join(dirPath, image.imageFileName);
-    fs.writeFileSync(filePath, Buffer.from(image.imageBase64, 'base64'));
+    await new Promise((resolve, reject) => {
+        fs.writeFile(filePath, Buffer.from(image.imageBase64, 'base64'), (err) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve();
+            }
+        });
+    });
   }
 }
 
 router.post('/upload', upload.single('image'), async (req, res) => {
-  try {
-      if (!req.file) {
-          return res.status(400).send('No file uploaded');
-      }
+    try {
+        if (!req.file) {
+            return res.status(400).send('No file uploaded');
+        }
+        // Get other information like filename, upload date, etc.
+        const filename = req.file.filename;
+        const year = req.file.destination.split(path.sep)[1];
+        const month = req.file.destination.split(path.sep)[2];
+        const day = req.file.destination.split(path.sep)[3];
+        
+        // Construct the URL of the uploaded file
+        const uploadedFileUrl = `${req.protocol}://${req.get('host')}/uploads/${year}/${month}/${day}/${filename}`;
+        
+        // Read the uploaded file from disk
+        const fileData = await new Promise((resolve, reject) => {
+            fs.readFile(req.file.path, (err, data) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(data);
+                }
+            });
+        });
+  
+        // Compress the image
+        const compressedData = await sharp(fileData)
+            .jpeg({ quality: 80 })
+            .toBuffer();
+  
+        // Calculate the SHA-256 hash of the compressed file content
+        const fileHash = crypto.createHash('sha256').update(compressedData).digest('hex');
+  
+        // Check if an image with the same hash already exists in the database
+        const existingImage = await Image.findOne({ imageFileHash: fileHash });
+  
+        if (existingImage) {
+            // Delete all the uploaded files and save compressed version to the directory
+            
+            new Promise((resolve, reject) => {
+                fs.unlink(req.file.path, (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                });
+            });
+  
+            return res.status(200).json({ url: existingImage.imageFileURL });
+        } else {
+            // Convert file data to base64
+            const base64Data = compressedData.toString('base64');
 
-      // Get other information like filename, upload date, etc.
-      const filename = req.file.filename;
-      const year = req.file.destination.split(path.sep)[1];
-      const month = req.file.destination.split(path.sep)[2];
-      const day = req.file.destination.split(path.sep)[3];
-      
-      // Construct the URL of the uploaded file
-      const uploadedFileUrl = `${req.protocol}://${req.get('host')}/uploads/${year}/${month}/${day}/${filename}`;
+            new Promise(function(resolve, reject) {
+                fs.writeFile(req.file.path, compressedData, function(err) {
+                    if (err) reject(err);
+                    else resolve();
+                });
+            });
 
-      // Read the uploaded file from disk
-      const fileData = fs.readFileSync(req.file.path);
-
-      // Calculate the SHA-256 hash of the file content
-      const fileHash = crypto.createHash('sha256').update(fileData).digest('hex');
-
-      // Check if an image with the same hash already exists in the database
-      const existingImage = await Image.findOne({ imageFileHash: fileHash });
-
-      if (existingImage) {
-          // Check if the file really exists if so delete, if not create a new one
-          fs.unlinkSync(req.file.path);
-
-          return res.status(200).json({ url: existingImage.imageFileURL });
-      } else {
-          // Convert file data to base64
-          const base64Data = fileData.toString('base64');
-
-          // Save the base64-encoded data to the database
-          const image = new Image({
-              imageFileName: filename,
-              imageBase64: base64Data,
-              imageFileURL: uploadedFileUrl,
-              imageFileHash: fileHash
-          });
-          await image.save();
-
-          // Save the uploaded file URL to the database or perform other actions
-          res.json({ url: uploadedFileUrl });
-      }
-  } catch (error) {
-      console.error('Error processing the image', error);
-      res.status(500).send('Error processing the image');
-  }
+            // Save the base64-encoded data to the database
+            const image = new Image({
+                imageFileName: filename,
+                imageBase64: base64Data,
+                imageFileURL: uploadedFileUrl,
+                imageFileHash: fileHash
+            });
+            await image.save();
+  
+            // Save the uploaded file URL to the database or perform other actions
+            res.json({ url: uploadedFileUrl });
+        }
+    } catch (error) {
+        console.error('Error processing the image', error);
+        res.status(500).send('Error processing the image');
+    }
 });
 
 router.post("/upload/single", upload.single("file"), (req, res) => {

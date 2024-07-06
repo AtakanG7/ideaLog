@@ -36,3 +36,74 @@
   .search-bar.visible {
     display: block;
   }
+
+      
+  .ubuntu-light {
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+}
+
+.profile-img-custom{
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: solid;
+  border-color: black;
+  border-width: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -6rem !important;
+  position: absolute;
+  z-index: 99 !important;
+}
+
+@media only screen and (max-width: 786px) {
+  .profile-img-custom{
+      width: 120px !important;
+      height: 120px !important; 
+      bottom: -5rem !important;
+  }
+
+  .before::before{
+    content: "";
+    position: relative;
+    display: flex;
+    width: 100%;
+    height: 70px !important;
+  }
+
+  .profile-banner-mobile{
+    height: 120px !important;
+  }
+}
+@media only screen and (min-width: 1024px) {
+  .profile-img-custom{
+      width: 140px;
+      height: 140px;
+  }
+}
+
+.profile-banner-mobile{
+    height: 200px;
+}
+
+.before::before{
+  content: "";
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 85px;
+}
+
+.form-custom:active{
+  border-color: #FFD700;
+}
+
+.article-title {
+  color: rgb(50, 50, 50);
+  font-size: clamp(3rem, 3.4vw, 5.2rem);
+  font-weight: 900;
+  line-height: 1.05;
+  margin-bottom: 0;
+}

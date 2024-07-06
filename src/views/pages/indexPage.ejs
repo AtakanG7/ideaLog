@@ -4,77 +4,12 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/style.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Tiny5&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/customcss.css" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hi there!</title>
+    <title>Hi there! | Read Tech Articles </title>
   </head>
-  <style>
-    
-    .ubuntu-light {
-        font-family: "Ubuntu", sans-serif;
-        font-weight: 300;
-        font-style: normal;
-    }
 
-    .profile-img-custom{
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
-      border: solid;
-      border-color: black;
-      border-width: 2px;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: -6rem !important;
-      position: absolute;
-      z-index: 99 !important;
-    }
-
-    @media only screen and (max-width: 786px) {
-      .profile-img-custom{
-          width: 120px !important;
-          height: 120px !important; 
-          bottom: -5rem !important;
-      }
-
-      .before::before{
-        content: "";
-        position: relative;
-        display: flex;
-        width: 100%;
-        height: 70px !important;
-      }
-
-      .profile-banner-mobile{
-        height: 120px !important;
-      }
-    }
-    @media only screen and (min-width: 1024px) {
-      .profile-img-custom{
-          width: 140px;
-          height: 140px;
-      }
-    }
-
-    .profile-banner-mobile{
-        height: 200px;
-    }
-
-    .before::before{
-      content: "";
-      position: relative;
-      display: flex;
-      width: 100%;
-      height: 85px;
-    }
-
-    .form-custom:active{
-      border-color: #FFD700;
-    }
-  </style>
   <body>
 
       <% if (isAdmin) { %>  
@@ -103,8 +38,8 @@
             <h1 class="text-center w-100 text-3xl mt-4 ubuntu-light" style="font-size: 2rem;">Welcome back my friend :)</h1>
           </div>
         <% } %>
-        
       </div>
+
       <% if (!user.isSubscribed) { %>
         <div class="ui container my-4 py-4">
           <form class="flex justify-center form-custom" action="/users/subscribe/" method="post">
@@ -114,112 +49,13 @@
               </div>
           </form>
         </div>
-      <% } else %>
+      <% } %>
+
+      <%- include('../partials/latestBlogs.ejs', {data: data}) %>
       
-
-
-      <div class="ui container">
-        <div class="ui container w-100 my-5 ml-0 px-0" id="scroll-place">
-          <article class="prose lg:prose-xl m-0">
-            <h2 class="py-2 px-3 flex justify-start rounded-lg" style="background-color: #FFD700; width: fit-content;">Latest Blogs</h2>
-          </article>
-        </div>
-        <div class="row mx-5 ui stackable grid" style="margin: 0;"> 
-          <% data.forEach(post => { %>
-            <div class="col-12 col-md-6 col-lg-4 mb-3">
-              <div class="ui fluid card">
-                <a href="/blogs/<%= post.url %>" class="ui fluid image">
-                    <div class="ui yellow ribbon label">
-                      <p class="text-dark"><%- post.authorMetadata ? (post.authorMetadata.name === "AItakan" ? 'AI Created' : post.authorMetadata.name || post.authorMetadata.email ) : '' %></p>
-                    </div>
-                    <img
-                    loading="lazy" 
-                    id="post-<%= post._id %>"
-                    src="<%= post.image || '/img/profile-pic.png' %>"
-                    alt="<%= post.title %>"
-                    style="height: 200px; object-fit: cover; width: 100%;"
-                  >
-                </a>
-                <div class="content">
-                  <a href="/blogs/<%= post.url %>" class="header"><%= post.title %></a>
-                  <div class="meta">
-                    <span class="date">Published on <%= post.createdAt.toLocaleDateString("en-US", {
-                      weekday: 'long',
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    }) %></span>
-                  </div>
-                  <div class="description">
-                    <%= post.description.length > 100 ? post.description.substring(0, 100) + "..." : post.description %>
-                  </div>
-                </div>
-                <div class="extra content">
-                  <a>
-                    <i class="like icon"></i>
-                    <%= post.likes %> Likes
-                  </a>
-                  <a>
-                    <i class="comment icon"></i>
-                    <%= post.comments.length %> Comments
-                  </a>
-                  <a>
-                    <i class="eye icon"></i>
-                    <%= post.views %> Views
-                  </a>
-                </div>
-              </div>
-            </div>
-          <% }) %>
-        </div>
-
-        <% if (nextPage !== null) { %>
-          <div class="container mx-5 my-10">
-            <div class="ui pagination menu">
-              <a href="/?page=<%= nextPage %>" class="item">&lt; View Older Posts</a>
-            </div>
-          </div>
-        <% } %>
-      </div>
-    
       <script>
-        async function fetchImage(query, postContainerId) {
-          const url = `https://pixabay.com/api/?key=34782797-09ed0e53aefea1bdbbcccd6f0&q=${query.toLowerCase()}&image_type=photo&editors_choice=true`;
-
-          try {
-            const response = await fetch(url);
-            const data = await response.json();
-
-            if (data.hits && data.hits.length > 0) {
-              const imageUrl = data.hits[1].webformatURL;
-              document.querySelector(`#${postContainerId}`).src = imageUrl;
-            } else {
-              console.error("No images found.");
-            }
-          } catch (error) {
-            console.error("Error fetching image:", error);
-          }
-        }
-        async function loadImages() {
-          const data = <%- JSON.stringify(data) %>;
-          for (const post of data) {
-            const keywords = post.search_keywords.split(' ')[0] + ' ' + post.search_keywords.split(' ')[1];
-            await fetchImage(keywords, `post-${post._id}`);
-          }
-        }
-
-        window.onload = () => {
-          loadImages();
-        };
-        
-        scrollToElement = () => {
-          const element = document.querySelector('#scroll-place');
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
-          }
-        };
-
+        var data = <%- JSON.stringify(data) %>; 
       </script>
-      
+      <script type="text/javascript" src="/js/script.js"></script>
   </body>
 </html>

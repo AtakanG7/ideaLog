@@ -3,6 +3,7 @@ import Config from "./config/config.js";
 import session from "express-session";
 import express from "express";
 import path from "path";
+import cors from "cors";
 import passport from "passport";
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import redis from "./apis/db/redis.js";
@@ -30,6 +31,12 @@ const port = keyValt.PORT || 5000;
 // Creating the application
 const app = express();
 
+app.use(cors(
+  {
+    origin: 'http://localhost:5000',
+    credentials: true
+  }
+));
 app.use(setUserRole);
 
 // Setting up session middleware
