@@ -51,14 +51,14 @@ class signupController {
             sendEmail({
                 to: req.body.email,
                 subject: `Hoşgeldiniz`,
-                text: `Bu sitede bla bla yapabilirsiniz!`
+                text: `Welcome to the Atakan's Blog. Thank you for signing up. Please verify your email address to start publishing blog posts.`
             });
     
             // Send verification email
             sendEmail({
                 to: req.body.email,
                 subject: 'Email Dogrulama',
-                text: `Kod 6 saat içinde sıfırlanacaktır. Linke tıklayarak emailinizi onaylayın:\n\nhttp://${keyValt.DOMAIN}/signup/verification?email=${req.body.email}&verificationToken=${verificationToken}`
+                text: `Kod 6 saat içinde sıfırlanacaktır. Linke tıklayarak emailinizi onaylayın:\n\nhttps://${keyValt.DOMAIN}/signup/verification?email=${req.body.email}&verificationToken=${verificationToken}`
             });
     
             res.redirect(`/`);

@@ -51,37 +51,32 @@ export const sendEmail = async (mailOptions) => {
   }
 };
 
-
 // A function to subscribe people to the newsletter
 export const subscribeToNewsletter = async (req, res) => {
   try {
     const email = req.body.email;
-    const apiKey = keyValt.BREVO_SMTP_API_KEY;
-    const listId = keyValt.BREVO_LIST_ID;
     const url = `https://api.brevo.com/v3/contacts`;
 
-    if(await isEmailInContacts(email)){
-      console.log('Email already subscribed:', email);
-      res.render('pages/failurePage', { notify: 'Your email is already subscribed. :) Keep an eye on your inbox!' });
-      return
-    }
-    // Payload for adding a contact to a list
     const payload = {
       email: email,
       updateEnabled: true,
-      listIds: [listId], // Adding the list ID to which the contact should be added
+      listIds: [keyValt.BREVO_LIST_ID], 
       attributes: { EMAIL: email },
     };
 
-    // Making the POST request to Brevo API
-    const response = await axios.post(url, payload, {
+    
+    if(await isEmailInContacts(email)){
+      res.render('pages/successPage', { message: 'You are already subscribed, keep an eye on your inbox!', user: {email:email}, isUnsubscription: false });
+      return
+    }
+
+    await axios.post(url, payload, {
       headers: {
         'Content-Type': 'application/json',
-        'api-key': apiKey,
+        'api-key': keyValt.BREVO_SMTP_API_KEY,
       },
     });
 
-    // Send welcome email
     const mailOptions = {
       from: "Atakan's Blog <no-reply@atakangul.com>",
       to: email,
@@ -91,7 +86,7 @@ export const subscribeToNewsletter = async (req, res) => {
 
     await sendEmail(mailOptions);
 
-    res.render('pages/successPage', { notify: 'Horaay, You have successfully subscribed to our newsletter!' });
+    res.render('pages/successPage', { message: 'Congratulation! You have successfully subscribed to our newsletter!', user: {email:email}, isUnsubscription: false });
 
   } catch (error) {
     if (error.response && error.response.status === 400) {
@@ -135,25 +130,23 @@ export const isEmailInContacts = async (email) => {
 export const unsubscribeFromNewsletter = async (req, res) => {
   try {
     const email = req.body.email;
-    const apiKey = keyValt.BREVO_SMTP_API_KEY;
-    const listId = keyValt.BREVO_LIST_ID;
     const url = `https://api.brevo.com/v3/contacts/${email}`;
 
     // Check if the email is in the contacts list
     if(!await isEmailInContacts(email)){
-      res.render('pages/failurePage', { notify: 'Your email is not subscribed. :(' });
+      res.render('pages/failurePage', { message: 'Your email is not subscribed!' });
       return;
     }
     // Payload for removing a contact from a list
     const payload = {
-      listIds: [listId], // The list ID from which the contact should be removed
+      listIds: [keyValt.BREVO_LIST_ID], // The list ID from which the contact should be removed
     };  
 
     // Making the DELETE request to Brevo API
-    const response = await axios.delete(url, {
+    await axios.delete(url, {
       headers: {
         'Content-Type': 'application/json',
-        'api-key': apiKey,
+        'api-key': keyValt.BREVO_SMTP_API_KEY,
       },
       data: payload,
     });
@@ -164,116 +157,13 @@ export const unsubscribeFromNewsletter = async (req, res) => {
       to: email,
       subject: 'You have successfully unsubscribed from our newsletter!',
       text: 'You have successfully unsubscribed from our newsletter. You will no longer receive our latest news and updates.',
-      html: 'You have successfully unsubscribed from our newsletter. You will no longer receive our latest news and updates.',
     };
 
     await sendEmail(mailOptions);
     
-    res.render('pages/successPage', { notify: 'You have successfully unsubscribed from our newsletter.' });
+    res.render('pages/successPage', { message: 'You have successfully unsubscribed from our newsletter.', user: {email:email}, isUnsubscription: true });
   } catch (error) {
     console.error('Error unsubscribing from newsletter:', error);
-    throw error;
   }
 };
 
-// A function to send an email to all subscribers in the contact list
-export const sendLatestNewsletterToAllSubscribers = async () => {
-  try {
-    const apiKey = keyValt.BREVO_SMTP_API_KEY;
-    const listId = keyValt.BREVO_LIST_ID;
-    const url = `https://api.brevo.com/v3/contacts/lists/${listId}/contacts`;
-    const payload = {
-      attributes: { EMAIL: 'ALL' },
-    };
-
-    // Get the latest blog post from the database efficiently
-    const blogPosts = await Blogs.find().sort({ createdAt: -1 }).limit(1);
-    const latestBlogPost = blogPosts[0];
-    console.log(latestBlogPost)
-    const mailOptions = {
-      from: "Atakan's Blog <no-reply@atakangul.com>",
-      to: 'no-reply@atakangul.com',
-      subject: 'Latest Blog Post',
-      text: `Here's the latest blog post: ${latestBlogPost.title}`,
-      html: `Here's the latest blog post: <a href="https://atakangul.com/blogs/blog/${latestBlogPost._id}">`,
-    };
-
-    const response = await axios.get(url, {
-      headers: {
-        'Content-Type': 'application/json',
-        'api-key': apiKey,
-      },
-      params: payload,
-    });
-
-    const subscribers = response.data.contacts;
-    console.log("subscribers")
-    console.log(subscribers)
-    // Send email to each subscriber
-    for (const subscriber of subscribers) {
-      const { email } = subscriber;
-      const subscriberMailOptions = {
-        ...mailOptions,
-        to: email,
-      };
-
-      await sendEmail(subscriberMailOptions);
-    }
-
-    console.log('Email sent to all subscribers');
-  } catch (error) {
-    console.error('Error sending email to all subscribers:');
-    throw error;
-  }
-};
-
-export const sendLatestAINewsletterToAllSubscribers = async () => {
-  try {
-    const apiKey = keyValt.BREVO_SMTP_API_KEY;
-    const listId = keyValt.BREVO_LIST_ID;
-    const url = `https://api.brevo.com/v3/contacts/lists/${listId}/contacts`;
-    const payload = {
-      attributes: { EMAIL: 'ALL' },
-    };
-
-    // Get the latest blog post from the database efficiently find the only author is AItakan
-
-    const blogPosts = await Blogs
-    .find({ authorName: "AItakan" })
-    .sort({ createdAt: -1 })
-    .limit(1);
-    const latestBlogPost = blogPosts[0];
-    const mailOptions = {
-      from: "Atakan's Blog <no-reply@atakangul.com>",
-      to: 'no-reply@atakangul.com',
-      subject: 'Latest Blog Post',
-      text: `Here's the latest blog post: ${latestBlogPost.title}`,
-      html: `Here's the latest blog post: <a href="https://atakangul.com/blogs/blog/${latestBlogPost._id}">`,
-    };
-
-    const response = await axios.get(url, {
-      headers: {
-        'Content-Type': 'application/json',
-        'api-key': apiKey,
-      },
-      params: payload,
-    });
-
-    const subscribers = response.data.contacts;
-    // Send email to each subscriber
-    for (const subscriber of subscribers) {
-      const { email } = subscriber;
-      const subscriberMailOptions = {
-        ...mailOptions,
-        to: email,
-      };
-
-      await sendEmail(subscriberMailOptions);
-    }
-
-    console.log('Email sent to all subscribers');
-  } catch (error) {
-    console.error('Error sending email to all subscribers:');
-    throw error;
-  }
-};

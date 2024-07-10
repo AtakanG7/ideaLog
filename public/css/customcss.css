@@ -1,4 +1,5 @@
 @import "tailwindcss/typography.css";
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
 
 @tailwind utilities;
 
@@ -100,10 +101,151 @@
   border-color: #FFD700;
 }
 
+.author-font {
+  color :#666666;
+}
+
 .article-title {
   color: rgb(50, 50, 50);
-  font-size: clamp(3rem, 3.4vw, 5.2rem);
-  font-weight: 900;
+  font-family: "Ubuntu", sans-serif !important;
+  font-size: clamp(3rem, 2.5vw, 5.2rem);
+  font-weight: 1000;
+  padding-bottom: 10px; /* Adjust based on the padding */
+  padding-top: 10px; /* Adjust based on the padding */
+  padding-right: 15px; /* Adjust based on the padding */
+  padding-left: 15px; /* Adjust based on the padding */
   line-height: 1.05;
   margin-bottom: 0;
 }
+
+.article-subtitle{
+    font-family: "Ubuntu", sans-serif !important;
+    font-size: 20px; /* Adjust based on the font size */
+    color: #666666; /* Adjust based on the text color */
+    line-height: 1.5; /* Adjust based on the line height */
+    margin: 0; /* Adjust based on the margin */
+    padding-bottom: 10px; /* Adjust based on the padding */
+    padding-top: 10px; /* Adjust based on the padding */
+    padding-right: 15px; /* Adjust based on the padding */
+    padding-left: 15px; /* Adjust based on the padding */
+}
+
+.p25 {
+  padding-bottom: 10px; /* Adjust based on the padding */
+  padding-top: 10px; /* Adjust based on the padding */
+  padding-right: 25px; /* Adjust based on the padding */
+  padding-left: 25px; /* Adjust based on the padding */
+}
+
+.custom-font {
+  font-family: "Ubuntu", sans-serif !important;
+  font-weight: 300 !important;
+  font-style: normal !important;
+  overflow-wrap: break-word !important;
+}
+
+.custom-font p{
+  font-family: "Ubuntu", sans-serif !important;
+  font-weight: 300 !important;
+  font-size: 20px;
+  line-height: 2.7rem !important;
+  font-style: normal !important;
+  overflow-wrap: break-word !important;
+}
+
+.custom-font h2 span {
+  font-family: "Ubuntu", sans-serif !important;
+  font-weight: 900 !important;
+  color :#666666 !important;
+  font-size: 1.5rem;
+}
+
+.custom-font h1 span {
+  font-family: "Ubuntu", sans-serif !important;
+  font-weight: 900 !important;
+  color :#666666 !important;
+  font-size: 1.4rem;
+}
+
+.custom-font ol {
+  position: relative;
+}
+
+.custom-font ol li {
+  position: relative;
+  list-style: none;
+  counter-reset: section; /* Reset the section counter for ordered lists */
+  padding-left: 2.5em; /* Add padding to create space between icons and text */
+}
+
+.custom-font ol li[data-list="bullet"]::before {
+  content: "• ";
+  position: absolute;
+  left: 0;
+  width: 2.5em;
+  text-align: right;
+  padding-right: 0.5em; /* Add padding for separation */
+}
+
+.custom-font ol li[data-list="checked"]::before {
+  content: "✔ "; /* Changed the bullet to a check mark for better visual distinction */
+  position: absolute;
+  left: 0;
+  width: 2.5em;
+  text-align: right;
+  padding-right: 0.5em; /* Add padding for separation */
+}
+
+.custom-font ol li[data-list="unchecked"]::before {
+  content: "✗ "; /* Changed the bullet to a cross mark for better visual distinction */
+  position: absolute;
+  left: 0;
+  width: 2.5em;
+  text-align: right;
+  padding-right: 0.5em; /* Add padding for separation */
+}
+
+.custom-font ol li[data-list="ordered"] {
+  counter-increment: section; /* Increment the section counter for ordered lists */
+}
+
+.custom-font ol li[data-list="ordered"]::before {
+  content: counter(section) ". ";
+  position: absolute;
+  left: 0;
+  width: 2.5em;
+  text-align: right;
+  padding-right: 0.5em; /* Add padding for separation */
+}
+
+
+.custom-font blockquote {
+  border-left: 5px solid #F2F2F2;
+  padding-left: 10px;
+  font-family: "Ubuntu", sans-serif !important;
+  font-weight: 300 !important;
+  font-size: 20px;
+  line-height: 2.7rem !important;
+  font-style: normal !important;
+  overflow-wrap: break-word !important;
+}
+
+.custom-font a {
+  color: #3777bb;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.ql-code-block-container {
+  background-color: #F2F2F2 !important;
+  padding: 20px !important;
+  border-radius: 5px !important;
+  color: #000000 !important;
+  font-size: 20px !important;
+  line-height: 1.5 !important;
+  overflow-x: auto !important;
+  white-space: pre-wrap !important;
+}
+
+
+

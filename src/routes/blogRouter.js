@@ -12,9 +12,9 @@ const isAdmin = [authControllerMiddlewares.mustBeAdmin];
 // Using express router, creating specific routes
 const router = Router()
 
+
 router.get("/q", async (req, res) => {
   const search = req.query.q;
-  console.log(search);
   // find the blog with the text
   const result = await Blogs.find({ $text: { $search: search } }).limit(10);
   res.json(result);
@@ -31,13 +31,13 @@ router.get('/:url',  async (req, res) => {
       let postURL = req.params.url;
   
       const post = await Blogs.findOne({ url: postURL });
-
+      
       const comments = await Comments.find({ post: post._id, verified: true });
       
       // Add view count
       post.views += 1;
       await post.save();
-
+      console.log(post)
       res.render('./pages/blogPage', {
         data:post,
         comments: comments,
@@ -54,10 +54,7 @@ router.get("/update/:id", isAuth, isAdmin, (req, res) => {
     res.render("./pages/blogEditPage", { id: Number(id), currentRoute: `/blogs/update/post_id-${id}` })
 });
 
-router.post("/", isAdmin ,isAuth, (req, res) => {
-  res.render("./pages/failurePage", { notify: "Currently working on this side. Try again later!" });
-  return
-});
+router.post("/", isAuth, blogController.createUserWrittenBlogs);
 
 router.get("/new/blog/create", isAuth, (req, res) => {
   res.render("./pages/blogPostPage", { currentRoute: `/blogs/creation` })

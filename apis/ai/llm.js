@@ -162,38 +162,13 @@ async function startAIPostCreation(query) {
 
 async function startUserPostCreation(content) {
   try {
-    const promptDirectives = `Rewrite the given blog post without changing any word. Your task only to put the given content into structure and segmented format.
-    You are allowed to use html tags in your content. This is super important to do! If there is a code in the given blog use code tags. If there is a content 
-    that can be ordered or bullet use ordered list tags. Keep the content in good flow. use strong tags for bold text. You are allowed to use as much as you can to make
-    the content easy to read! You can use bootstrap to manipulate the text. 
-    
-    If the given content has a segment with a related image url include the url with the field 'image_url' into the segment. If not you can simply not put the image_url
-    fielf for the corresponding segment.
-    `
-
-    const expectedOutputFormat = `{
-      "1": {
-        "title": "Title of the first segment of the blog post",
-        "content": "Content of the first segment of the blog post quotes,lists,orders,code block,headers,sections,main content, and more you can use. You have access to daisy ui classes.",
-        "one_keyword": "Best keyword of the first segment of the blog post"
-        "image_url":"image url of the first segment of the blog post"
-      },
-      "2": {
-        "title": "Title of the second segment of the blog post",
-        "content": "Content of the second segment of the blog post quotes,lists,orders,code block,headers,sections,main content, and more you can use. You have access to daisy ui classes.",
-        "one_keyword": "Best keyword of the second segment of the blog post"
-        "image_url":"image url of the second segment of the blog post"
-      },
-      "3": {
-        "title": "Title of the third segment of the blog post",
-        "content": "Content of the third segment of the blog post quotes,lists,orders,code block,headers,sections,main content, and more you can use. You have access to daisy ui classes.",
-        "one_keyword": "Best keyword of the third segment of the blog post"
-        "image_url":"image url of the third segment of the blog post"
-      } ... (if there are more segments in the article you can add them here)
-    }`
 
     // Blog Post Content
-    const blogPostContent = await getAICreatedBlogPost(promptDirectives, expectedOutputFormat, content);
+    const blogPostContent = JSON.stringify([
+      {
+        content: content
+      }
+    ]);
     
     // Blog Post Title
     const blogPostTitle = await getBlogPostTitle(blogPostContent);

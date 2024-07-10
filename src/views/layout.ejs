@@ -51,24 +51,23 @@ function getProfileInfo() {
   fetch('/users/')
     .then(res => res.json())
     .then(data => {
-      const dateObj = new Date(data.createdAt);
-      const month = dateObj.toLocaleString('default', { month: 'long' });
-      const day = dateObj.getDate();
-      const year = dateObj.getFullYear();
       const fields = {
-        createdAt: [month, day, year],
+        name: data.name,
         degree: data.degree,
         email: data.email,
         isSubscribed: data.isSubscribed ? 'Yes' : 'Nope :(',
         isVerified: data.isVerified ? 'Yes' : 'Nope :(',
         role: data.role,
-        visitCount: data.visitCount
       };
       Object.entries(fields).forEach(([id, value]) => {
         const input = document.getElementById(id);
         input.classList.remove('skeleton');
         input.value = Array.isArray(value) ? value.join(' ') : value;
       });
+      const imageElement = document.getElementById('imageUrl');
+      if (imageElement) {
+        imageElement.src = data.imageURL;
+      }
     })
     .catch(console.error);
 }

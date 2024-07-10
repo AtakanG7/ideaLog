@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=668b5fa91b747b001ff84eae&product=inline-share-buttons&source=platform" async="async"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/customcss.css">
   <title><%= data.title %> | Atakan Gül</title>
-
 </head>
 <body>
   <% if (isAdmin) { %>  
@@ -19,7 +19,7 @@
     <%- include('../partials/headers/headerUnAuth.ejs') %>
   <% } %>
 
-  <div class="container-fluid" style="max-width: 900px; word-break: break-all; line-height: 40px;">
+  <div class="container-fluid" style="max-width: 680px; word-break: break-all; line-height: 40px;">
     <div class="flex w-100">
       <button class="btn btn-ghost btn-outline text-base-content normal-case text-xl flex ms-auto px-10 py-0 m-1" style="width: fit-content;" onclick="window.location.href='/'">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left">
@@ -29,15 +29,16 @@
       </button>
     </div>
     <div class="row mt-3">
-      <h1 class="article-title"><%= data.title %></h1>
-      
-      <div class="flex items-center space-x-4 mb-5 mt-5">
-        <div class="avatar rounded-full overflow-hidden" style="width: 50px; height: 50px;">
+      <h1 class="article-title "><%= data.title %></h1>
+      <h2 class="article-subtitle"><%= data.description %></h2>
+
+      <div class="flex items-center space-x-4 m-0 mt-4 p25 ">
+        <div class="avatar rounded-full overflow-hidden" style="width: 40px; height: 40px;">
           <img src="<%= data.authorMetadata.avatarURL ? data.authorMetadata.avatarURL : '/img/user.png' %>" alt="Avatar" class="w-full h-full object-cover">
         </div>
         <div>
-          <div class="flex gap-2 justify-center align-center">
-            <h2 class="font-bold text-lg"><%= data.authorMetadata.name %></h2>
+          <div class="flex justify-center align-center">
+            <h2 class="font-bold text-lg author-font"><%= data.authorMetadata.name || data.authorMetadata.email %></h2>
             <% if (data.authorMetadata.isVerified) { %>
               <span class="inline-flex items-center justify-center w-5 h-5 me-3 text-sm font-semibold text-blue-800 bg-blue-100 rounded-full dark:text-blue-400" title="Verified">
                 <svg class="w-2.5 h-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
@@ -46,11 +47,15 @@
               </span>
             <% } %>
           </div>
-          <small class="text-gray-500"><%= new Date(data.createdAt).toLocaleDateString("en-US", {
-            month: 'short', day: 'numeric', year: 'numeric'
-          }) %></small>
+          <div class="flex justify-start align-center m-0 p-0">
+            <small class="text-gray-500"><%= new Date(data.createdAt).toLocaleDateString("en-US", {
+              month: 'short', day: 'numeric', year: 'numeric'
+            }) %></small>
+          </div>
         </div>
+        <div class="flex ms-auto sharethis-inline-share-buttons"></div>
       </div>
+      <div class="divider p-0 mb-1 px-4" ></div>
 
       <% const contents = JSON.parse(data.content); %>
       
@@ -71,12 +76,27 @@
       </div>
       -->
       
-      <% for (const [key, value] of Object.entries(contents)) { %>
-        <div class="mb-8" id="<%= value.title %>">
-          <img src="<%= value.image_url || '' %>" id="post-<%= key %>" class="rounded-t-lg w-100 mb-5 p-2 skeleton" alt="<%= value.title %>" />
-          <h1 class="text-2xl font-bold mb-2"><%= value.title %></h1>
-          <p class="mb-4 text-lg" style="font: 300; font-size: 17px; line-height: 35px;"><%= value.content %></p>
-        </div>
+      <% if(data.AICreated) { %>
+        <% for (const [key, value] of Object.entries(contents)) { %>
+          <div class="mb-8 p25" id="<%= value.title %>">
+            <img src="<%= value.image_url || '' %>" id="post-<%= key %>" class="rounded-t-lg w-100 mb-5 p-2 skeleton" alt="<%= value.title %>" />
+            <h1 class="text-2xl font-bold mb-2"><%= value.title %></h1>
+            <div class="mb-4 text-lg" style="font: 300; font-size: 20px; line-height: 35px;">
+              <%- value.content %>
+            </div>
+          </div>
+        <% } %>
+      <% } else { %>
+        <% for (const [key, value] of Object.entries(contents)) { %>
+          <div class="mb-8" id="<%= value.title %>">
+            <h2 class="mb-4" style="font: 300; font-size: 35px; line-height: 35px;">
+              <%= value.title %>
+            </h2>
+            <div class="mb-4 custom-font" style="font-size: 24px; line-height: 35px;">
+              <%- value.content %>
+            </div>
+          </div>
+        <% } %>
       <% } %>
 
       <div class="card bg-base-100 shadow-xl mt-5">
@@ -93,7 +113,7 @@
             </div>
             <div>
               <div class="flex gap-2 justify-center align-center">
-                <h2 class="font-bold text-lg"><%= data.authorMetadata.name %></h2>
+                <h2 class="font-bold text-lg"><%= data.authorMetadata.name || data.authorMetadata.email %></h2>
                 <% if (data.authorMetadata.isVerified) { %>
                   <span class="inline-flex items-center justify-center w-5 h-5 me-3 text-sm font-semibold text-blue-800 bg-blue-100 rounded-full dark:text-blue-400" title="Verified">
                     <svg class="w-2.5 h-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
@@ -193,7 +213,19 @@
 
   <script>
 
-    
+    function likePost() {
+        fetch('/blogs/like', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ _id: '<%= data._id %>' })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            document.querySelector('.clap').textContent = Number(document.querySelector('.clap').textContent) + 1;
+          }
+        })
+      }
 
     async function postComment() {
       const comment = document.querySelector('.textarea').value.trim();
@@ -234,6 +266,7 @@
       notification.style.display = 'block';
       setTimeout(() => notification.style.display = 'none', 5000);
     }
+    
     function addCommentToDOM(comment) {
       const commentBox = document.getElementById('comments-container');
       const commentHTML = `
@@ -266,21 +299,7 @@
       const noComments = document.getElementById('no-comments');
       if (noComments) noComments.style.display = 'none';
     }
-
-    function likePost() {
-      fetch('/blogs/like', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ _id: '<%= data._id %>' })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          document.querySelector('.clap').textContent = Number(document.querySelector('.clap').textContent) + 1;
-        }
-      })
-    }
-
+  
     function stripHtml(html) {
       const temporalDiv = document.createElement("div");
       temporalDiv.innerHTML = html;
@@ -289,7 +308,7 @@
 
     async function fetchImage(query, postContainerId) {
       const apiKey = "34782797-09ed0e53aefea1bdbbcccd6f0";
-      const url = `https://pixabay.com/api/?key=${apiKey}&q=${encodeURIComponent(query.toLowerCase())}&image_type=photo&per_page=10`;
+      const url = `https://pixabay.com/api/?key=${apiKey}&q=${encodeURIComponent(query.toLowerCase())}&image_type=photo&per_page=10&w=800&h=400`;
       try {
         const response = await fetch(url);
         const data = await response.json();
@@ -300,8 +319,10 @@
         
       }
     }
-
     async function loadImages() {
+      if(!<%- JSON.stringify(data.AICreated) %>){
+        return;
+      }
       const contents = <%- JSON.stringify(contents) %>;
      
       for (const [key, value] of Object.entries(contents)) {
@@ -315,6 +336,7 @@
       const element = document.querySelector('#scroll-place');
       if (element) element.scrollIntoView({ behavior: 'smooth' });
     };
+  
   </script>
 </body>
 </html>

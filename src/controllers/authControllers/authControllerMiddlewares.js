@@ -19,12 +19,12 @@ class authControllerMiddlewares{
             try {
                 
                 // Check if cookie is present
-                if (!req.headers.cookie) {
+                if (!req.cookies.authToken) {
                     return res.status(401).redirect('/login');
                 }
 
                 // Get the JWT token from the cookie
-                const token = req.headers.cookie.split('=')[1];
+                const token = req.cookies.authToken;
                 // If the token is not present, return a 401 Unauthorized error
                 if (!token) {
                     return res.status(401).redirect('/login');
@@ -45,12 +45,12 @@ class authControllerMiddlewares{
         async mustBeAdmin(req, res, next) {
             try {
                 // Check if cookie is present
-                if (!req.headers.cookie) {
+                if (!req.cookies.authToken) {
                     return res.status(401).redirect('/login');
                 }
                 
                 // Get the JWT token from the cookie
-                const token = req.headers.cookie.split('=')[1];
+                const token = req.cookies.authToken;
 
                 // If the token is not present, return a 401 Unauthorized error
                 if (!token) {
@@ -77,14 +77,15 @@ class authControllerMiddlewares{
             }
         }
 
-        async isAdmin(req, res, next) {
+        async isAdmin(req, res) {
             try {
+                
                 // Check if cookie is present
-                if (!req.headers.cookie) {
+                if (!req.cookies.authToken) {
                     return false;
                 }
                 // Get the JWT token from the cookie
-                const token = req.headers.cookie.split('=')[1];
+                const token = req.cookies.authToken;
                 // If the token is not present, return a 401 Unauthorized error
                 if (!token) {
                     return false
@@ -98,6 +99,7 @@ class authControllerMiddlewares{
                 // Check if the user's role is 'admin'
                 return decodedToken.role === 'admin';
             } catch (err) {
+                console.log("not authenticated")
                 // If there's an error (e.g., invalid token, expired token), return false
                 return false;
             }
@@ -109,14 +111,14 @@ class authControllerMiddlewares{
          * @param {string} token - The JWT token to be checked.
          * @returns {boolean} - Returns true if the user is authenticated, false otherwise.
          */
-        async isAuthenticated(req, res) {
+        async isAuthenticated(req, res)     {
             try {
                 // Check if cookie is present
-                if (!req.headers.cookie) {
+                if (!req.cookies.authToken) {
                     return false;
                 }
                 // Get the JWT token from the cookie
-                const token = req.headers.cookie.split('=')[1];
+                const token = req.cookies.authToken;
                 // If the token is not present, return a 401 Unauthorized error
                 if (!token) {
                     return false
@@ -174,7 +176,7 @@ class authControllerMiddlewares{
                 const sessionUUID = uuidv4();
                 const token = jwt.sign({ uuid: sessionUUID, role: user.role }, keyValt.SECRET_KEY, { expiresIn: '1h' });
                 // Store the token in an HTTP-only cookie
-                res.cookie('authToken', token, { httpOnly: true, maxAge: 3600000 }); // 1 hour
+                res.cookie('authToken', token, { httpOnly: true, maxAge: 3600000, overwrite: true }); // 1 hour
                 // Store the session UUID in Redis with the user ID as the value for 1 hour
                 await client.setEx(sessionUUID, 3600, String(user._id));
                 // Setting authenticated to true
@@ -197,7 +199,7 @@ class authControllerMiddlewares{
         async getUserFromSession(req, res) {
             try {
                 // Get the JWT token from the cookie
-                const token = req.headers.cookie.split('=')[1];
+                const token = req.cookies.authToken;
                 // If the token is not present, return a 401 Unauthorized error
                 if (!token) {
                     return false

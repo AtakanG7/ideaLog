@@ -5,6 +5,7 @@ import express from "express";
 import path from "path";
 import cors from "cors";
 import passport from "passport";
+import cookieParser from "cookie-parser";
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import redis from "./apis/db/redis.js";
 import mongoose from "./apis/db/db.js";
@@ -37,6 +38,10 @@ app.use(cors(
     credentials: true
   }
 ));
+
+// Adding parser for cookies
+app.use(cookieParser());
+
 app.use(setUserRole);
 
 // Setting up session middleware

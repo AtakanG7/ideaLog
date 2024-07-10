@@ -23,7 +23,7 @@ class verifyController{
             const email = await client.get(req.query.verificationToken);
     
             if (!email) {
-                return res.render('verificationFailurePage', { message: 'Doğrulama kodu bulunamadı. Zaman aşımına uğradı.' });
+                return res.render('./pages/verificationFailuarePage.ejs', { message: 'Doğrulama kodu bulunamadı. Zaman aşımına uğradı.' });
             }
     
             // Verify the email. Get current user_id from redis by using the uuid from the jwt
@@ -32,8 +32,8 @@ class verifyController{
              * and if the token is valid. If the token is valid, get the user id from redis
              * by using the uuid from the token.
              */
-            if (req.headers.cookie && req.headers.cookie.includes('authToken=')) {
-                const token = req.headers.cookie.split('=')[1];
+            if (req.cookies && req.cookies.authToken) {
+                const token = req.cookies.authToken;
                 const decoded = jwt.verify(token, keyValt.SECRET_KEY);
                 if (decoded.uuid) {
                     // Get the user id from redis
@@ -43,28 +43,27 @@ class verifyController{
                         if (user) {
                             user.isVerified = true;
                             await user.save();
+                            console.log(user);
                             // Send verification success message
                             sendEmail({
                                 to: email,
                                 subject: 'Email Dogrulama',
                                 text: 'Emailiniz onaylandı. Artık sitede post paylaşabilirsiniz. 🤗',
-                                html: '/public/html/verificationMailTemplate.html'
                             });
-                            res.render('index', { successMessage: 'Email onaylandı. Artık sitede post paylaşabilirsiniz. 🤗' }
-                            );
+                            res.render('./pages/verificationSuccessPage.ejs', { message: 'Emailiniz onaylandı. Artık sitede post paylaşabilirsiniz. 🤗', user:user });
                         } else {
-                            return res.render('verificationFailurePage', { message: 'Böyle bir kullanıcı bulunmamaktadır' });
+                            return res.render('./pages/verificationFailurePage.ejs', { message: 'Böyle bir kullanıcı bulunmamaktadır' });
                         }
                     } else {
-                        return res.render('verificationFailurePage', { message: 'Doğrulamayı yapmadan önce giriş yapınız' });
+                        return res.render('./pages/verificationFailurePage.ejs', { message: 'Doğrulamayı yapmadan önce giriş yapınız' });
                     }
                 }
             }else{
-                return res.render('verificationFailurePage', { message: 'Doğrulamayı yapmadan önce giriş yapınız' });
+                return res.render('./pages/verificationFailurePage.ejs', { message: 'Doğrulamayı yapmadan önce lütfen giriş yapınız' });
             }
         } catch (err) {
             sendTelegramMessage(`[Error] ${err.message}`);
-            res.status(500).json({ message: 'Internal server error' ,error: err.message });
+            return res.render('./pages/verificationFailurePage.ejs', { message: 'Doğrulamayı yapmadan önce lütfen giriş yapınız' });
         }
     }
 }

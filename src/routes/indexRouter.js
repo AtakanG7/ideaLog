@@ -16,6 +16,11 @@ router.get('/dashboard', isAdmin, blogController.getAllBlogs)
 // Route to render index.ejs
 router.get("/", blogController.getPublishedBlogs);
 
+// Route to verify email
+router.get('/signup/verification', function (req, res) {
+    authController.verifyController.verifyEmail(req, res)
+})
+
 router.get("/privacy-policy", function (req, res) {res.render('./pages/privacyPolicy', { currentRoute: '/privacy-policy' })});
 
 // Route to render login.ejs
@@ -25,18 +30,13 @@ router.get('/login', function (req, res) {res.render('./pages/loginPage', { curr
 router.get('/signup', function (req, res) {res.render('./pages/signupPage', { currentRoute: '/signup' })})
 
 // login logic to validate req.body.user 
-router.post('/login', function (req, res, next) {
-    authController.loginController.login(req, res, next)
-})
+router.post('/login', (req, res) => {
+    authController.loginController.login(req, res);
+});
 
 // would be implemented here
 router.post('/signup', function (req, res, next) {
     authController.signupController.signup(req, res, next)
-})
-
-// Route to verify email
-router.get('/signup/verification/:verificationToken', function (req, res) {
-    authController.verifyController.verifyEmail(req, res)
 })
 
 // Google OAuth2 routes

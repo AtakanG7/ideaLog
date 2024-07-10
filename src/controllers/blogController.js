@@ -140,6 +140,7 @@ export const  blogController = {
                 ...blogPostRequiredMetadata,
                 authorMetadata: authorMetadata,
                 status: 'published',
+                AICreated: true,
             });
 
             await blog.save();
