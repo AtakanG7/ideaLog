@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/customcss.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tiny5&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
@@ -86,7 +87,7 @@
       <% } %>
 
 
-      <div class="ui container">
+      <div class="ui container" style="max-width: 1054px !important; min-height: 60vh;">
         <div class="flex w-100">
             <span class="btn btn-ghost btn-outline text-base-content normal-case text-xl flex ms-auto px-10 py-0" style="width: fit-content;">
                 <a href="/"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></a>
@@ -94,52 +95,34 @@
         </div>
         <div class="ui container w-100 my-5 ml-0 px-0" id="scroll-place">
           <article class="prose  m-0">
-            <h2 class="py-2 px-3 flex justify-start rounded-lg" style="background-color: #FFD700; width: fit-content;">Search results for <%= q %></h2>
+            <h2 class="custom-font py-2 flex justify-start rounded-lg" style="width: fit-content;">
+              <span class="text-base-content font-semibold">Search results for <span style="color: #394ab6;"><%= q %></span></span>
+              <span class="text-base-content font-medium tracking-wide">&nbsp; (<%= data.length %>)</span>
+            </h2>
           </article>
         </div>
-        <div class="row mx-5 ui stackable grid" style="margin: 0;"> 
+        <div class="ui divided items gap-3">
           <% data.forEach(post => { %>
-            <div class="col-12 col-md-6 col-lg-4 mb-3">
-              <div class="ui fluid card">
-                <a href="/blogs/<%= post.url %>" class="ui fluid image">
-                    <div class="ui yellow ribbon label">
-                      <p class="text-dark"><%- post.authorMetadata ? (post.authorMetadata.name === "AItakan" ? 'AI Created' : post.authorMetadata.name || post.authorMetadata.email ) : '' %></p>
-                    </div>
-                    <img
-                    loading="lazy" 
-                    id="post-<%= post._id %>"
-                    src="<%= post.image || '/img/profile-pic.png' %>"
-                    alt="<%= post.title %>"
-                    style="height: 200px; object-fit: cover; width: 100%;"
-                  >
-                </a>
-                <div class="content">
-                  <a href="/blogs/<%= post.url %>" class="header"><%= post.title %></a>
-                  <div class="meta">
-                    <span class="date">Published on <%= post.createdAt.toLocaleDateString("en-US", {
-                      weekday: 'long',
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    }) %></span>
-                  </div>
-                  <div class="description">
-                    <%= post.description.length > 100 ? post.description.substring(0, 100) + "..." : post.description %>
-                  </div>
-                </div>
-                <div class="extra content">
-                  <a>
-                    <i class="like icon"></i>
-                    <%= post.likes %> Likes
-                  </a>
-                  <a>
+            <div class="item">
+              <div class="ui tiny image rounded" style="min-width: 160px !important; object-fit: cover;">
+                <img class="rounded" style="border-radius: 10px; object-fit: cover; max-height: 120px !important;" src="<%= post.imageURL %>" alt="<%= post.title %>" loading="lazy">
+              </div>
+              <div class="content">
+                <a href="/blogs/<%= post.url %>" class="header"><%= post.title %></a>
+                <div class="meta">
+                  <span class="author">
+                    <i class="user icon"></i>
+                    <%- post.authorMetadata ? (post.authorMetadata.name === "AItakan" ? 'AI Created' : post.authorMetadata.name || post.authorMetadata.email ) : 'Unknown' %>
+                  </span>
+                  <span class="date">
+                    <i class="calendar icon"></i>
+                    <%= new Date(post.createdAt).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' }) %>
+                  </span>
+                  <span class="comments">
                     <i class="comment icon"></i>
                     <%= post.comments.length %> Comments
-                  </a>
-                  <a>
-                    <i class="eye icon"></i>
-                    <%= post.views %> Views
-                  </a>
+                  </span>
+                  <div class="flex ms-auto sharethis-inline-share-buttons"></div>
                 </div>
               </div>
             </div>
@@ -147,7 +130,11 @@
         </div>
 
       </div>
-    
+      
+      <div class="ui container" style="max-width: 1054px !important;">
+        <%- include('../partials/recommendedBlogs.ejs') %>
+      </div>
+
       <script>
         async function fetchImage(query, postContainerId) {
           const url = `https://pixabay.com/api/?key=34782797-09ed0e53aefea1bdbbcccd6f0&q=${query.toLowerCase()}&image_type=photo&editors_choice=true`;

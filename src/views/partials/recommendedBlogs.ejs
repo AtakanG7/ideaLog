@@ -6,12 +6,14 @@
       <div class="sub header">Our most popular posts</div>
     </div>
   </h2>
-  
+  <% if (!recommendations) { %>
+    <% var recommendations = []; %>  
+  <% } %> 
   <div class="ui divided items gap-3">
     <% recommendations.forEach(post => { %>
       <div class="item">
-        <div class="ui tiny image rounded w-25" >
-          <img class="rounded" style="max-height: 100px !important; object-fit: cover;" src="<%= post.imageURL %>" alt="<%= post.title %>" loading="lazy">
+        <div class="ui tiny image rounded" style="min-width: 160px !important; object-fit: cover;">
+          <img class="rounded" style="border-radius: 10px; object-fit: cover; max-height: 120px !important;" class="custom-image" src="<%= post.imageURL %>" alt="<%= post.title %>" loading="lazy">
         </div>
         <div class="content">
           <a href="/blogs/<%= post.url %>" class="header"><%= post.title %></a>
@@ -53,7 +55,7 @@
 
 <script>
   const limit = 3;
-  let offset = 3;
+  let offset = <%= recommendations.length %>;
   const blogPostsContainer = document.querySelector('#blog-posts-container .ui.items');
   const noMoreBlogs = document.querySelector('#no-more-blogs');
   const loading = document.querySelector('#loading');
@@ -111,6 +113,7 @@
     })
       .then(response => response.json())
       .then(data => {
+        console.log(data)
         if(data.data.length < 3) {
           loading.style.display = 'none';
           noMoreBlogs.style.display = 'block';
@@ -119,8 +122,8 @@
         data.data.forEach(post => {
           const blogPostHTML = `
             <div class="item">
-              <div class="ui tiny image rounded w-25">
-                <img style="max-height: 100px !important; object-fit: cover;" id="${post._id}" src="${post.imageURL}" alt="${post.title}" loading="lazy">
+              <div class="ui tiny image rounded " style="min-width: 160px !important; object-fit: cover;">
+                <img style="border-radius: 10px; object-fit: cover; max-height: 120px !important" class="custom-image" id="${post._id}" src="${post.imageURL}" alt="${post.title}" loading="lazy">
               </div>
               <div class="content">
                 <a href="/blogs/${post.url}" class="header">${post.title}</a>
@@ -146,6 +149,5 @@
         offset += 3;
       });
   }
-
 
 </script>
