@@ -1,7 +1,28 @@
-@import "tailwindcss/typography.css";
-@import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
-@tailwind utilities;
+.loading-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background-color: transparent;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.loading-container.d-none {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loading-content {
+  text-align: center;
+}
+
+.ui.icon.huge.loading {
+  margin-top: 1rem;
+}
 
 .search-container {
     display: flex;
@@ -38,12 +59,6 @@
     display: block;
   }
 
-      
-  .ubuntu-light {
-    font-family: "Ubuntu", sans-serif;
-    font-weight: 300;
-    font-style: normal;
-}
 
 .profile-img-custom{
   width: 150px;
@@ -57,6 +72,15 @@
   bottom: -6rem !important;
   position: absolute;
   z-index: 99 !important;
+}
+
+.article-content-container img {
+  width: 100% !important;
+}
+
+.article-content-container .ql-video {
+  width: 100% !important;
+  height: 350px;
 }
 
 @media only screen and (max-width: 786px) {
@@ -107,7 +131,7 @@
 
 .article-title {
   color: rgb(50, 50, 50);
-  font-family: "Ubuntu", sans-serif !important;
+  font-family: "Roboto", sans-serif !important;
   font-size: clamp(3rem, 2.5vw, 5.2rem);
   font-weight: 1000;
   padding-bottom: 10px; /* Adjust based on the padding */
@@ -119,7 +143,7 @@
 }
 
 .article-subtitle{
-    font-family: "Ubuntu", sans-serif !important;
+    font-family: "Roboto", sans-serif !important;
     font-size: 20px; /* Adjust based on the font size */
     color: #666666; /* Adjust based on the text color */
     line-height: 1.5; /* Adjust based on the line height */
@@ -137,45 +161,121 @@
   padding-left: 25px; /* Adjust based on the padding */
 }
 
+.ql-indent-1 {
+  padding-left: 2em !important;
+}
+
+.ql-indent-2 {
+  padding-left: 4em !important;
+}
+
+.ql-indent-3 {
+  padding-left: 6em !important;
+}
+
+.ql-indent-4 {
+  padding-left: 8em !important;
+}
+
+.ql-indent-5 {
+  padding-left: 10em !important;
+}
+
+.ql-indent-6 {
+  padding-left: 12em !important;
+}
+
+.ql-indent-7 {
+  padding-left: 14em !important;
+}
+
+.ql-indent-8 {
+  padding-left: 16em !important;
+}
+
+.ql-indent-9 {
+  padding-left: 18em !important;
+}
+
+.ql-size-large {
+  font-size: 28px !important;
+}
+
+.ql-size-huge{
+  font-size: 40px !important;
+}
+
+.ql-size-small {
+  font-size: 15px !important;
+}
+
 .custom-font {
-  font-family: "Ubuntu", sans-serif !important;
-  font-weight: 300 !important;
+  font-family: "Roboto", sans-serif !important;
   font-style: normal !important;
   overflow-wrap: break-word !important;
 }
 
 .custom-font p{
-  font-family: "Ubuntu", sans-serif !important;
-  font-weight: 300 !important;
+  font-family: "Roboto", sans-serif !important;
   font-size: 20px;
   line-height: 2.7rem !important;
   font-style: normal !important;
   overflow-wrap: break-word !important;
 }
 
-.custom-font h2 span {
-  font-family: "Ubuntu", sans-serif !important;
+.custom-font h2 {
+  font-family: "Roboto", sans-serif !important;
   font-weight: 900 !important;
-  color :#666666 !important;
+  color: rgb(50, 50, 50);
   font-size: 1.5rem;
 }
 
-.custom-font h1 span {
-  font-family: "Ubuntu", sans-serif !important;
+.custom-font h1 {
+  font-family: "Roboto", sans-serif !important;
   font-weight: 900 !important;
-  color :#666666 !important;
-  font-size: 1.4rem;
+  color: rgb(50, 50, 50);
+  font-size: 2.2rem;
+}
+
+.custom-font h2 {
+  font-family: "Roboto", sans-serif !important;
+  font-weight: 700 !important;
+  color: rgb(50, 50, 50);
+  font-size: 1.8rem;
+}
+
+.custom-font h3 {
+  font-family: "Roboto", sans-serif !important;
+  font-weight: 600 !important;
+  color: rgb(50, 50, 50);
+  font-size: 1.5rem;
+}
+
+.custom-font h4 {
+  font-family: "Roboto", sans-serif !important;
+  font-weight: 500 !important;
+  color: rgb(50, 50, 50);
+  font-size: 1.2rem;
+}
+
+.custom-font h5 {
+  font-family: "Roboto", sans-serif !important;
+  font-weight: 400 !important;
+  color: rgb(50, 50, 50);
+  font-size: 1rem;
 }
 
 .custom-font ol {
+  font-family: "Roboto", sans-serif !important;
   position: relative;
 }
 
 .custom-font ol li {
+  font-family: "Roboto", sans-serif !important;
+  font-size: 20px;
   position: relative;
-  list-style: none;
-  counter-reset: section; /* Reset the section counter for ordered lists */
-  padding-left: 2.5em; /* Add padding to create space between icons and text */
+  margin-bottom: 10px;
+  padding-left: 2.5em;
 }
 
 .custom-font ol li[data-list="bullet"]::before {
@@ -222,7 +322,7 @@
 .custom-font blockquote {
   border-left: 5px solid #F2F2F2;
   padding-left: 10px;
-  font-family: "Ubuntu", sans-serif !important;
+  font-family: "Roboto", sans-serif !important;
   font-weight: 300 !important;
   font-size: 20px;
   line-height: 2.7rem !important;

@@ -1,15 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=668b5fa91b747b001ff84eae&product=inline-share-buttons&source=platform" async="async"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="/css/customcss.css">
-  <title><%= data.title %> | Atakan Gül</title>
-</head>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="<%= JSON.stringify(data.description) %>">
+    <meta name="keywords" content="<%= JSON.stringify(data.search_keywords) %> Atakan Gül">
+    <meta name="author" content="<%= JSON.stringify(data.authorMetadata.name || data.authorMetadata.email) %>">
+    <meta property="og:title" content="<%= JSON.stringify(data.title) %> | Atakan Gül | Latest Tech Articles and Insights">
+    <meta property="og:description" content="<%= JSON.stringify(data.description) %>">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.atakangul.com/">
+    <meta property="og:image" content="https://www.atakangul.com/img/img/favicon.ico">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:site_name" content="Atakan Gül's Technology Blog">
+    <title><%= JSON.stringify(data.title + ' | Atakan Gül Blog | Technology Insights') %></title>
+    <link rel="canonical" href="<%= JSON.stringify(data.url) %>">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/customcss.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.ico">
+    <link rel="manifest" href="/site.webmanifest">
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Blog",
+        "name": "Atakan Gül's Technology Blog",
+        "description": "Explore the latest technology articles and insights on Atakan Gül's blog.",
+        "url": "https://www.atakangul.com/",
+        "author": {
+          "@type": "Person",
+          "name": "Atakan Gül"
+        }
+      }
+    </script>
+  </head>
 <body>
   <% if (isAdmin) { %>  
     <%- include('../partials/headers/headerAdmin.ejs') %>
@@ -30,8 +57,11 @@
     </div>
     <div class="row mt-3">
       <h1 class="article-title "><%= data.title %></h1>
-      <h2 class="article-subtitle"><%= data.description %></h2>
-
+      <% if (data.description.length > 200) { %>
+        <h2 class="article-subtitle"><%= data.description.slice(0, 200) + '...' %></h2>
+      <% } else { %>
+        <h2 class="article-subtitle"><%= data.description %></h2>
+      <% } %>
       <div class="flex items-center space-x-4 m-0 mt-4 p25 ">
         <div class="avatar rounded-full overflow-hidden" style="width: 40px; height: 40px;">
           <img src="<%= data.authorMetadata.avatarURL ? data.authorMetadata.avatarURL : '/img/user.png' %>" alt="Avatar" class="w-full h-full object-cover">
@@ -78,7 +108,7 @@
       
       <% if(data.AICreated) { %>
         <% for (const [key, value] of Object.entries(contents)) { %>
-          <div class="mb-8 p25" id="<%= value.title %>">
+          <div class="mb-8 p25 article-content-container" id="<%= value.title %>">
             <img src="<%= value.image_url || '' %>" id="post-<%= key %>" class="rounded-t-lg w-100 mb-5 p-2 skeleton" alt="<%= value.title %>" />
             <h1 class="text-2xl font-bold mb-2"><%= value.title %></h1>
             <div class="mb-4 text-lg" style="font: 300; font-size: 20px; line-height: 35px;">
@@ -88,10 +118,10 @@
         <% } %>
       <% } else { %>
         <% for (const [key, value] of Object.entries(contents)) { %>
-          <div class="mb-8" id="<%= value.title %>">
-            <h2 class="mb-4" style="font: 300; font-size: 35px; line-height: 35px;">
+          <div class="mb-8 p25 article-content-container" id="<%= value.title %>">
+            <h1 class="mb-4" style="font: 300; font-size: 35px; line-height: 35px;">
               <%= value.title %>
-            </h2>
+            </h1>
             <div class="mb-4 custom-font" style="font-size: 24px; line-height: 35px;">
               <%- value.content %>
             </div>
@@ -124,9 +154,16 @@
               </div>
             </div>
           </div>
+          <div class=" mt-3 p-4">
+            <% data.search_keywords.split(",").slice(0,7).forEach((key) => { %>
+              <% if (!(key.length > 50)) { %>
+                <a href="/blogs/search?q=<%= encodeURIComponent(key) %>" class="ui tag label"><%= key %></a>
+              <% } %>
+            <% }); %>
+          </div>
         </div>
       
-        <div class="card-body">
+        <div class="card-body ">
           <div class="flex items-center justify-center gap-3">
             <div class="flex items-center">
               <button onclick="likePost()" class="btn btn-ghost btn-circle" title="Clap count">
@@ -168,7 +205,7 @@
                   <div class="w-full">
                     <div class="grid comment">
                       <div class="flex gap-2.5 mb-4">
-                        <img src="/img/avatar.png" alt="User image" class="w-10 h-11">
+                        <img src="/img/avatar.webp" alt="User image" class="w-10 h-11">
                         <div class="grid w-100">
                           <h5 class="text-gray-900 text-sm font-semibold leading-snug pb-1"><%= comment.authorName %></h5>
                           <div class="w-max grid w-100">
@@ -197,11 +234,7 @@
         </div>
       </div>
 
-      <div class="mb-8 mt-5">
-        <% Object.entries(contents).forEach(([key, value]) => { %>
-          <a href="/blogs/search?q=<%= encodeURIComponent(value.one_keyword) %>" class="ui tag label"><%- value.one_keyword %></a>
-        <% }); %>
-      </div>
+      <%- include('../partials/recommendedBlogs.ejs', { recommendations: recommendations }) %>
     </div>
   </div>
 
@@ -212,6 +245,20 @@
   </div>
 
   <script>
+    
+    let isShowingAll = false;
+    
+    function toggleContent() {    
+      const subtitle = document.querySelector('.article-subtitle');
+      if (isShowingAll) {
+        subtitle.textContent = <%- JSON.stringify(data.description) %>;
+      } else {
+        subtitle.textContent = <%- JSON.stringify(data.description) %>.slice(0, 200) + '...';
+      }
+      isShowingAll = !isShowingAll;
+    }
+
+    document.querySelector('.article-subtitle').addEventListener('click', toggleContent);
 
     function likePost() {
         fetch('/blogs/like', {
@@ -273,7 +320,7 @@
         <div class="w-full">
           <div class="grid comment">
             <div class="flex gap-2.5 mb-4">
-              <img src="/img/avatar.png" alt="User avatar" class="w-10 h-11">
+              <img src="/img/avatar.webp" alt="User avatar" class="w-10 h-11">
               <div class="grid w-100">
                 <h5 class="text-gray-900 text-sm font-semibold leading-snug pb-1">${comment.authorName}</h5>
                 <div class="w-max grid w-100">

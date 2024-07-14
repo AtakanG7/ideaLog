@@ -14,12 +14,12 @@
                   <p class="text-dark"><%- post.authorMetadata ? (post.authorMetadata.name === "AItakan" ? 'AI Created' : post.authorMetadata.name || post.authorMetadata.email ) : '' %></p>
                 </div>
                 <img
-                loading="lazy" 
-                id="post-<%= post._id %>"
-                src="<%= post.image || '/img/404.jpeg' %>"
-                alt="<%= post.title %>"
-                style="height: 200px; object-fit: cover; width: 100%;"
-              >
+                  loading="lazy" 
+                  id="post-<%= post._id %>"
+                  src="<%= post.imageURL %>"
+                  alt="<%= post.title %>"
+                  style="height: 200px; object-fit: cover; width: 100%;"
+                >
             </a>
             <div class="content">
               <a href="/blogs/<%= post.url %>" class="header"><%= post.title %></a>
@@ -61,4 +61,4 @@
         </div>
       </div>
     <% } %>
-  </div>
+</div>

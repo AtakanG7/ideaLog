@@ -12,6 +12,7 @@ const isAdmin = [authControllerMiddlewares.mustBeAdmin];
 // Using express router, creating specific routes
 const router = Router()
 
+router.get("/recommendations", blogController.getNextPopularBlogs);
 
 router.get("/q", async (req, res) => {
   const search = req.query.q;
@@ -34,14 +35,21 @@ router.get('/:url',  async (req, res) => {
       
       const comments = await Comments.find({ post: post._id, verified: true });
       
+      // Get most viewed posts
+      const mostViewedPosts = await Blogs
+        .find({ status: 'published' })
+        .sort({ views: -1 })
+        .limit(3);
+
       // Add view count
       post.views += 1;
       await post.save();
-      console.log(post)
+     
       res.render('./pages/blogPage', {
         data:post,
         comments: comments,
-        currentRoute: `/blogs`
+        currentRoute: `/blogs`,
+        recommendations: mostViewedPosts
       });
     } catch (error) {
         sendTelegramMessage(`[Error] ${error.message}`);

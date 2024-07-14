@@ -175,7 +175,7 @@ async function startUserPostCreation(content) {
     sendTelegramMessage('Blog Post Title:\n' + blogPostTitle);
 
     // Blog Post webFriendlyURL
-    const webFriendlyURL = await getBlogPostURL(blogPostTitle);
+    const webFriendlyURL = getBlogPostURL(blogPostTitle);
     sendTelegramMessage('Blog Post webFriendlyURL:\n' + webFriendlyURL);
 
     // Blog Post Description
@@ -259,15 +259,13 @@ async function getImportantKeywords(content, isCheapTask = true) {
 async function getBlogPostDescription(content, isCheapTask = true) {
   try {
 
-    const prompt = `You are a description generator. Given the content, determine what the content is about. The content may be in JSON format or plain text; your output should be plain text.
-    Example:
-    content: {
-      "...": "\\n\\"content\\":\\"Stay up-to-date with the latest tech trends and reviews in the tech world with this vibrant and exciting blog post. From UNOX Ovens to HitPaw Video Converter, Marvell stock to Hamamatsu Photonics, and big tech companies forming Ultra Accelerator Link group, get ready to dive into the world of technology like never before!\\",\\n\\"content\\": {\\n\\"segment1\\": \\"<h2>UNOX Ovens Lounge Launch in Guwahati</h2><p>Exciting news! UNOX, a leading Italian brand, has launched UNOX Lounge in Guwahati. This is a major milestone for the brand, following successful launches in Goa and Mumbai. With top-notch Italian technology, UNOX Ovens are set to revolutionize cooking experiences. Read more <a href='#'>here</a>.</p>\\",\\n\\"segment2\\": \\"<h2>HitPaw Video Converter V4.2.0 - What's New?</h2><p>HitPaw introduces the latest software version - HitPaw Video Converter V4.2.0. This update brings exciting new features like video download and music conversion. Enrich your life with HitPaw's innovative software. Learn more <a href='#'>here</a>.</p>\\",\\n\\"segment3\\":\\"<h2>Marvell Stock Update - What's in Store?</h2><p>Despite a sales dip, Marvell Technology Group Ltd. maintains a strong buy rating with a target of $94. Find out more about Marvell's performance in the market and what analysts have to say. Dive deeper <a href='#'>here</a>.</p>\\",\\n\\"segment4\\":\\"<h2>Best Smokeless Indoor Grills for 2024</h2><p>Summer is here, and it's time for grilling season! Explore the 6 best smokeless indoor grills for 2024. Whether you're a grilling enthusiast or a novice, these grills are sure to elevate your BBQ game. Get grilling <a href='#'>here</a>.</p>\\",\\n\\"segment5\\":\\"<h2>Hamamatsu Photonics Acquisition of NKT Photonics</h2><p>Exciting news! Hamamatsu Photonics has completed the acquisition of NKT Photonics A/S. This strategic move is set to enhance the capabilities of both companies in the photonics industry. Learn more <a href='#'>here</a>.</p>\\"\\n},\\n\\"author\\": \\"AItakan\\"\\n"
-    }
-    Expected output: Stay updated on the latest tech trends and reviews in this exciting blog post. From UNOX Ovens to HitPaw Video Converter, Marvell stock to Hamamatsu Photonics, dive into the world of technology like never before!
+    const prompt = `You are a description generator. Given the content, in html format or plain text please generate 
+    a friendly short and logical description from the content. The most important thing here is that the description must be SEO 
+    friendly. This description will be take place in web pages to showcase the content of the blog post. Create content focused
+    description.
     content: ${content}
-    
-    Your description: `;
+    you description:
+    `;
 
     const description = await sendToLLM(prompt, isCheapTask);
     sendTelegramMessage('description from Blog Post:\n' + description);
@@ -283,11 +281,7 @@ async function getBlogPostDescription(content, isCheapTask = true) {
 async function getBlogPostTitle(content, isCheapTask = true) {
   try {
     const prompt = `You are a title generator. Given the content, determine what the content is about. The content may be in JSON format or plain text; your output should be plain text.
-    Example:
-    content: {
-      "...": "\\n\\"content\\":\\"Stay up-to-date with the latest tech trends and reviews in the tech world with this vibrant and exciting blog post. From UNOX Ovens to HitPaw Video Converter, Marvell stock to Hamamatsu Photonics, and big tech companies forming Ultra Accelerator Link group, get ready to dive into the world of technology like never before!\\",\\n\\"content\\": {\\n\\"segment1\\": \\"<h2>UNOX Ovens Lounge Launch in Guwahati</h2><p>Exciting news! UNOX, a leading Italian brand, has launched UNOX Lounge in Guwahati. This is a major milestone for the brand, following successful launches in Goa and Mumbai. With top-notch Italian technology, UNOX Ovens are set to revolutionize cooking experiences. Read more <a href='#'>here</a>.</p>\\",\\n\\"segment2\\": \\"<h2>HitPaw Video Converter V4.2.0 - What's New?</h2><p>HitPaw introduces the latest software version - HitPaw Video Converter V4.2.0. This update brings exciting new features like video download and music conversion. Enrich your life with HitPaw's innovative software. Learn more <a href='#'>here</a>.</p>\\",\\n\\"segment3\\":\\"<h2>Marvell Stock Update - What's in Store?</h2><p>Despite a sales dip, Marvell Technology Group Ltd. maintains a strong buy rating with a target of $94. Find out more about Marvell's performance in the market and what analysts have to say. Dive deeper <a href='#'>here</a>.</p>\\",\\n\\"segment4\\":\\"<h2>Best Smokeless Indoor Grills for 2024</h2><p>Summer is here, and it's time for grilling season! Explore the 6 best smokeless indoor grills for 2024. Whether you're a grilling enthusiast or a novice, these grills are sure to elevate your BBQ game. Get grilling <a href='#'>here</a>.</p>\\",\\n\\"segment5\\":\\"<h2>Hamamatsu Photonics Acquisition of NKT Photonics</h2><p>Exciting news! Hamamatsu Photonics has completed the acquisition of NKT Photonics A/S. This strategic move is set to enhance the capabilities of both companies in the photonics industry. Learn more <a href='#'>here</a>.</p>\\"\\n},\\n\\"author\\": \\"AItakan\\"\\n"
-    }
-    Expected title: Tech Trends & Reviews
+    The title should be SEO friendly. This is not a url title what I meant with seo is the title should reflect the content very well with the least words
     
     content: ${content}
     

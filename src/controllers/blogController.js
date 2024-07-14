@@ -169,12 +169,11 @@ export const  blogController = {
             // Get author metadata
             const authorMetadata = await authController.authControllerMiddlewares.getUserFromSession(req, res);
             
-            console.log(authorMetadata)
-            
             // Save the ai post to the database
             const blog = new Blogs({
                 ...blogPostRequiredMetadata,
                 authorMetadata: authorMetadata,
+                imageURL: req.body.imageURL,
                 status: 'published',
             });
 
@@ -203,6 +202,27 @@ export const  blogController = {
                 currentRoute: `/blogs/search/${req.query.q}`,
                 q: req.query.q,
             })
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: error.message
+            });
+        }
+    },
+
+    getNextPopularBlogs: async (req, res) => {
+        try {
+            const { limit, offset } = req.query;
+            const result = await Blogs.find({ status: 'published' })
+                .sort({ views: -1 })
+                .skip(offset)
+                .limit(limit)
+                .exec();
+
+            res.status(200).json({
+                success: true,
+                data: result
+            });
         } catch (error) {
             res.status(500).json({
                 success: false,

@@ -48,7 +48,7 @@
     <!-- Create the editor container -->
      <div class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3 xl:col-span-2">
        
-        <div class="w-50 editor" id="editor"></div>
+        <div class="w-50 editor custom-font" id="editor"></div>
      </div>
 
     <%- include('../partials/blogPostModal.ejs') %>
@@ -66,7 +66,6 @@
       document.addEventListener('DOMContentLoaded', () => {
         // function to load the editor content from the localhost
         const savedContent = localStorage.getItem('editorContent');
-        console.log(savedContent)
         if (savedContent) {
           quill.clipboard.dangerouslyPasteHTML(savedContent);
         }
@@ -88,11 +87,11 @@
             });
 
             const result = await response.json();
-            console.log(result)
+            
             if (result.url) {
               const imageUrl = result.url;
               var range = quill.getSelection();
-              console.log(range.index)
+              
               if(range){
                 quill.insertEmbed(range.index, 'image', imageUrl, Quill.sources.USER);
               }
@@ -105,7 +104,7 @@
       const toolbarOptions = [
           ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
           ['blockquote', 'code-block'],
-          ['link', 'image', 'formula'],
+          ['link', 'image', 'video', 'formula'],
 
           [{ 'header': 1 }, { 'header': 2 }],               // custom button values
           [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'list': 'check' }],
@@ -135,15 +134,20 @@
         return quill.root.innerHTML;
       }
 
-
+      function getEditorThumbnail() {
+        return quill.container.querySelector('.ql-editor').querySelector('img').getAttribute('src');
+      }
+      
       async function sendEditorContent() {
         const content = getEditorContent();
-        
+        const thumbnail = getEditorThumbnail();
+
         if(content.trim() === '<p><br></p>') {
           alert('Please write something before sending it!');
           return
         }
         const data = {
+          imageURL: thumbnail ? thumbnail : '/img/404.jpeg',
           content: content
         };
 
@@ -162,16 +166,13 @@
           });
 
           if (response.ok) {
-            console.log('Content sent successfully');
             doneSection.style.display = 'flex';
             setTimeout(() => {
               redirect('/blogs');
             }, 1000); // Redirect after 1 second
           } else {
-            console.error('Failed to send content');
           }
         } catch (error) {
-          console.error('Error:', error);
         } finally {
           loadingSection.style.display = 'none';
         }

@@ -1,0 +1,151 @@
+<div class="ui container my-5 py-5" id="blog-posts-container">
+  <h2 class="ui header mb-4">
+    <i class="yellow star icon"></i>
+    <div class="content">
+      Top Recommendations
+      <div class="sub header">Our most popular posts</div>
+    </div>
+  </h2>
+  
+  <div class="ui divided items gap-3">
+    <% recommendations.forEach(post => { %>
+      <div class="item">
+        <div class="ui tiny image rounded w-25" >
+          <img class="rounded" style="max-height: 100px !important; object-fit: cover;" src="<%= post.imageURL %>" alt="<%= post.title %>" loading="lazy">
+        </div>
+        <div class="content">
+          <a href="/blogs/<%= post.url %>" class="header"><%= post.title %></a>
+          <div class="meta">
+            <span class="author">
+              <i class="user icon"></i>
+              <%- post.authorMetadata ? (post.authorMetadata.name === "AItakan" ? 'AI Created' : post.authorMetadata.name || post.authorMetadata.email ) : 'Unknown' %>
+            </span>
+            <span class="date">
+              <i class="calendar icon"></i>
+              <%= new Date(post.createdAt).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' }) %>
+            </span>
+            <span class="comments">
+              <i class="comment icon"></i>
+              <%= post.comments.length %> Comments
+            </span>
+            <div class="flex ms-auto sharethis-inline-share-buttons"></div>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+
+  <div id="loading" class="loading-container" style="display: none;">
+    <div class="loading-content">
+      <div class="ui icon huge loading">
+        <i class="spinner icon"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="no-more-blogs" class="no-more-blogs bg-white dark:bg-dark-300 rounded-lg p-4 flex items-center justify-center" style="display: none;">
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+  </svg>
+  <span class="ml-2 font-medium">No more blogs</span>
+</div>
+
+<script>
+  const limit = 3;
+  let offset = 3;
+  const blogPostsContainer = document.querySelector('#blog-posts-container .ui.items');
+  const noMoreBlogs = document.querySelector('#no-more-blogs');
+  const loading = document.querySelector('#loading');
+
+  function handleScroll() {
+    clearTimeout(fetchTimeout);
+    fetchTimeout = setTimeout(function() {
+      if (isScrollAtBottom()) {
+        loading.style.display = 'flex !important';
+        fetchMoreBlogs();
+      }
+    }, 100);
+  }
+
+  function isScrollAtBottom() {
+  // Get the height of the entire document
+  const documentHeight = Math.max(
+    document.body.scrollHeight,
+    document.documentElement.scrollHeight,
+    document.body.offsetHeight,
+    document.documentElement.offsetHeight,
+    document.body.clientHeight,
+    document.documentElement.clientHeight
+  );
+
+  // Get the current scroll position
+  const scrollPosition = window.pageYOffset || 
+    document.documentElement.scrollTop || 
+    document.body.scrollTop || 0;
+
+  // Get the viewport height
+  const windowHeight = window.innerHeight || 
+    document.documentElement.clientHeight || 
+    document.body.clientHeight || 0;
+
+  // Calculate the distance from the bottom
+  const distanceFromBottom = documentHeight - (scrollPosition + windowHeight);
+
+  // You can adjust this threshold value as needed
+  const threshold = 100; // pixels
+
+  return distanceFromBottom <= threshold;
+}
+  
+  let fetchTimeout;
+  window.addEventListener('scroll', handleScroll);
+  
+  function fetchMoreBlogs() {
+    loading.style.display = 'block';
+    fetch(`/blogs/recommendations?offset=${offset}&limit=${limit}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        if(data.data.length < 3) {
+          loading.style.display = 'none';
+          noMoreBlogs.style.display = 'block';
+          window.removeEventListener('scroll', handleScroll);
+        }
+        data.data.forEach(post => {
+          const blogPostHTML = `
+            <div class="item">
+              <div class="ui tiny image rounded w-25">
+                <img style="max-height: 100px !important; object-fit: cover;" id="${post._id}" src="${post.imageURL}" alt="${post.title}" loading="lazy">
+              </div>
+              <div class="content">
+                <a href="/blogs/${post.url}" class="header">${post.title}</a>
+                <div class="meta">
+                  <span class="author">
+                    <i class="user icon"></i>
+                    ${post.authorMetadata ? (post.authorMetadata.name === "AItakan" ? 'AI Created' : post.authorMetadata.name || post.authorMetadata.email ) : 'Unknown'}
+                  </span>
+                  <span class="date">
+                    <i class="calendar icon"></i>
+                    ${new Date(post.createdAt).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' })}
+                  </span>
+                  <span class="comments">
+                    <i class="comment icon"></i>
+                    ${post.comments.length} Comments
+                  </span>
+                </div>
+              </div>
+            </div>
+          `;
+          blogPostsContainer.insertAdjacentHTML('beforeend', blogPostHTML);
+        });
+        offset += 3;
+      });
+  }
+
+
+</script>

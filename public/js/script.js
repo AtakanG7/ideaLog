@@ -57,7 +57,14 @@ fetchImage = async function(query, postContainerId) {
 
 loadImages = async function() {
   for (const post of data) {
+    console.log(post);
     const keywords = post.search_keywords.split(' ')[0] + ' ' + post.search_keywords.split(' ')[1];
+    // Check first if the post has an image
+    const imageElement = document.querySelector(`#post-${post._id}`);
+    if (imageElement.src !== (window.location.origin + "/img/404.jpeg")) {
+      continue;
+    }
+
     await fetchImage(keywords, `post-${post._id}`);
   }
 }
@@ -87,7 +94,7 @@ showSeachBar = function() {
     const searchBar = document.querySelector('.searchBar');
     searchBar.style.display = 'block';
     searchBar.style.visibility = 'visible';
-  }
+}
   
 closeSearchBar = function() {
   const searchBar = document.querySelector('.searchBar');
