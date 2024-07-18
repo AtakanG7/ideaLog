@@ -18,10 +18,13 @@ const keyValt = new Config();
 const transporter = nodemailer.createTransport({
   host: keyValt.BREVO_SMTP_SERVER, // SMTP host
   port: keyValt.BREVO_SMTP_PORT || 587, // SMTP port (typically 587 for modern SMTP servers)
-  secure: true,
+  secure: false,
    auth: {
      user: keyValt.BREVO_SMTP_LOGIN,
      pass: keyValt.BREVO_SMTP_PASSWORD
+  },
+  tls: {
+      ciphers:'SSLv3'
   }
 });
 
