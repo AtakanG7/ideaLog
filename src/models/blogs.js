@@ -11,6 +11,7 @@ const blogSchema = new Schema({
     authorMetadata: { type: Object, required: true }, // REQUIRED!!!
     AICreated: { type: Boolean, required: true, default: false }, // REQUIRED!!!
     imageURL: { type: String, required: true, default: '/img/404.jpeg' }, // REQUIRED!!!
+    isProject: { type: Boolean, default: false }, // REQUIRED!!!
     views: { type: Number, default: 0 },
     comments: [{ type: Schema.Types.ObjectId, ref: 'Comments', default: [] }],
     status: { type: String, enum: ['draft', 'review', 'published'], default: 'review' },

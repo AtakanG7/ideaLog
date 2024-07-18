@@ -1,5 +1,5 @@
 import isAuth from '../controllers/authControllers/authControllerMiddlewares.js';
-
+import Config from '../../config/config.js';
 const authControllerMiddlewares = new isAuth();
 
 export async function isActiveRoute(route, currentRoute) {

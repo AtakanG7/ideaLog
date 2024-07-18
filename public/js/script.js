@@ -1,3 +1,6 @@
+import config from '../config/config.js';
+const keyVault = new config();
+
 document.addEventListener('DOMContentLoaded', function() {
     const allButtons = document.querySelectorAll('.searchBtn');
     const searchBar = document.querySelector('.searchBar');
@@ -36,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
 // Global functions
 fetchImage = async function(query, postContainerId) {
-  const url = `https://pixabay.com/api/?key=34782797-09ed0e53aefea1bdbbcccd6f0&q=${query.toLowerCase()}&image_type=photo&editors_choice=true`;
+  const url = `https://pixabay.com/api/?key=${keyVault.PIXEBAY_API_KEY}&q=${query.toLowerCase()}&image_type=photo&editors_choice=true`;
 
   try {
     const response = await fetch(url);
@@ -57,7 +60,6 @@ fetchImage = async function(query, postContainerId) {
 
 loadImages = async function() {
   for (const post of data) {
-    console.log(post);
     const keywords = post.search_keywords.split(' ')[0] + ' ' + post.search_keywords.split(' ')[1];
     // Check first if the post has an image
     const imageElement = document.querySelector(`#post-${post._id}`);
@@ -122,5 +124,5 @@ function getProfileInfo() {
         input.value = Array.isArray(value) ? value.join(' ') : value;
       });
     })
-    .catch(console.error);
+    .catch();
 }

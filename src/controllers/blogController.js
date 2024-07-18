@@ -229,6 +229,33 @@ export const  blogController = {
                 message: error.message
             });
         }
+    },
+
+    getProjects: async (req, res) => {
+        const result = await Blogs.find({ isProject: true }).limit(3);
+        res.status(200).render('./pages/projectPage.ejs', { data: result });
+    },
+
+    getNextPopularProjects: async (req, res) => {
+        try {
+            const { limit, offset } = req.query;
+            const result = await Blogs.find({ isProject: true })
+                .sort({ views: -1 })
+                .skip(offset)
+                .limit(limit)
+                .exec();    
+
+            res.status(200).json({
+                success: true,
+                data: result
+            });
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: error.message
+            });
+        }
     }
+     
 }
 

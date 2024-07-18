@@ -3,6 +3,7 @@ import passport  from "passport";
 import AuthController from "../controllers/authControllers/authController.js";
 import { blogController } from "../controllers/blogController.js";
 import { userController } from "../controllers/userController.js";
+import { sendTelegramMessage } from "../../apis/services/telegram.js";
 const authController = new AuthController();
 
 const isAuth = [authController.authControllerMiddlewares.mustAuthenticated];
@@ -23,11 +24,27 @@ router.get('/signup/verification', function (req, res) {
 
 router.get("/privacy-policy", function (req, res) {res.render('./pages/privacyPolicy', { currentRoute: '/privacy-policy' })});
 
+router.get('/portfolio', blogController.getProjects);
+
+router.get('/about', (req, res) => res.render('./pages/aboutPage', { currentRoute: '/about' }));
+
 // Route to render login.ejs
 router.get('/login', function (req, res) {res.render('./pages/loginPage', { currentRoute: '/login' })})
 
 // Route to render signup.ejs
 router.get('/signup', function (req, res) {res.render('./pages/signupPage', { currentRoute: '/signup' })})
+
+router.post('/contact', async (req, res) => {
+  try {
+    await sendTelegramMessage(
+      `[Contact Form] Name: ${req.body.name} Email: ${req.body.email} Message: ${req.body.message}`
+    );
+    res.redirect('/portfolio#contact');
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 // login logic to validate req.body.user 
 router.post('/login', (req, res) => {

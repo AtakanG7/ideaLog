@@ -31,6 +31,7 @@ class Config {
       this.TELEGRAM_API_BASE_URL = process.env.TELEGRAM_API_BASE_URL; 
       this.TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN; 
       this.TELEGRAM_BOT_CHAT_ID = process.env.TELEGRAM_BOT_CHAT_ID; 
+      this.PIXEBAY_API_KEY = process.env.PIXEBAY_API_KEY;
    }
  }
  

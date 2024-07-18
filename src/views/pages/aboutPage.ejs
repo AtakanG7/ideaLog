@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About | Atakan Gül's Blog</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .custom-yellow {
+            background-color: #ffc107;
+        }
+        .custom-yellow-text {
+            color: #ffc107;
+        }
+        .icon-circle {
+            background-color: #ffc107;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+       
+    </style>
+</head>
+<body class="bg-gray-100">
+    <% if (isAdmin) { %>  
+        <%- include('../partials/headers/headerAdmin.ejs') %>
+    <% } else if (isAuthenticated) { %>
+        <%- include('../partials/headers/headerAuth.ejs') %>
+    <% } else { %>
+        <%- include('../partials/headers/headerUnAuth.ejs') %>
+    <% } %>
+    
+    <header class="bg-white shadow-md">
+        <nav class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-gray-800">About</h1>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container ui mx-auto px-4">
+        <!-- Header Section -->
+        <section class="text-center mb-12 py-16">
+            <h1 class="text-5xl font-bold mb-4 custom-yellow-text">
+                <i class="fas fa-laptop-code mr-3"></i>Welcome to The Tech Hub
+            </h1>
+            <p class="text-xl text-gray-600">Exploring the frontiers of technology, one byte at a time.</p>
+        </section>
+
+        <!-- About Content -->
+        <section class="bg-white rounded-lg shadow-lg p-8 mb-12 hover-grow">
+            <h2 class="text-3xl font-bold mb-6 flex items-center">
+                <span class="icon-circle mr-4"><i class="fas fa-info-circle"></i></span>
+                About This Blog
+            </h2>
+            <p class="text-xl mb-6">
+                This blog is my digital playground where I explore and share insights about the ever-evolving world of technology. As a software developer with a passion for learning, I've created this space to:
+            </p>
+            <ul class="list-none text-xl space-y-4 mb-6">
+                <li><i class="fas fa-share-alt text-yellow-500 mr-2"></i> Share knowledge and experiences in software development</li>
+                <li><i class="fas fa-microchip text-yellow-500 mr-2"></i> Discuss cutting-edge technologies and their impacts</li>
+                <li><i class="fas fa-book-open text-yellow-500 mr-2"></i> Provide practical tips and tutorials for fellow developers</li>
+                <li><i class="fas fa-brain text-yellow-500 mr-2"></i> Explore the intersection of AI, cloud computing, and web development</li>
+            </ul>
+            <p class="text-xl">
+                Whether you're a seasoned developer or just starting your tech journey, I hope you'll find something valuable here. Let's learn, grow, and innovate together!
+            </p>
+        </section>
+
+        <!-- Subscribe Section -->
+        <section class="bg-white rounded-lg shadow-lg p-8 hover-grow">
+            <h2 class="text-3xl font-bold mb-6 flex items-center">
+                <span class="icon-circle mr-4"><i class="fas fa-envelope"></i></span>
+                Stay in the Loop
+            </h2>
+            <p class="text-xl mb-6">Want to keep up with the latest in tech? Subscribe for fresh insights delivered straight to your inbox!</p>
+            <div class="ui container my-4 py-4">
+                <form class="flex justify-center form-custom" action="/users/subscribe/" method="post">
+                    <div class="ui action input m-0 p-0" style="border: 2px solid #FFD700; border-radius: 5px; overflow: hidden;">
+                      <input type="email" placeholder="<%= user.email %>" value="<%= user.email %>" name="email" id="email" style="width: 17rem; border: none; padding: 10px;" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+                      <button class="ui button yellow text-dark" style="padding: 10px 20px;">
+                        <i class="fas fa-paper-plane mr-2"></i>Subscribe
+                      </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
