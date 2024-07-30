@@ -91,8 +91,7 @@ app.use(expressEjsLayouts);
 // Setting up static files directory
 app.use(express.static('public'));
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser({limit: '10mb'}));
 
 // Middleware to serve static files
 app.use('/uploads', express.static('uploads'));
@@ -102,9 +101,11 @@ app.use('/', indexRouter)
 app.use('/blogs', blogRouter)
 app.use('/users', userRouter)
 app.use('/images', imageRouter)
-
+app.use('/*', function(req, res) {
+  res.render('./pages/404Page.ejs')
+})
 // Fetch images from MongoDB
 restoreUploadsFolder()
 
 // Starting the server
-const server = app.listen(port, () => console.log(`Listening on ${port}!`));
+app.listen(port, () => console.log(`Listening on ${port}!`));

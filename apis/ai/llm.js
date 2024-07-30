@@ -5,6 +5,9 @@ import axios from 'axios';
 // Initialize configuration
 const keyValt = new Config();
 
+// Max API prompt length
+const MAX_PROMPT_LENGTH = 8096;
+
 // Initialize OpenAI API client
 const openai = new OpenAI({
     apiKey: keyValt.OPENAI_API_KEY
@@ -53,6 +56,13 @@ function getBlogPostURL(title) {
     return url;
 }
 
+function limitLengthForAPI(prompt) {
+  if (prompt.length > MAX_PROMPT_LENGTH) {
+    prompt = prompt.substring(0, MAX_PROMPT_LENGTH) + '... enough content to predict';
+  }
+  return prompt;
+}
+
 /**
  * Generate a blog post using OpenAI GPT-3.5-turbo
  * @param {string} prompt - The prompt to send to the OpenAI API
@@ -60,6 +70,7 @@ function getBlogPostURL(title) {
  */
 async function sendToLLM(prompt, isCheapTask) {
   try {
+    prompt = limitLengthForAPI(prompt);
     const chatCompletion = await openai.chat.completions.create({
       messages: [{ role: 'user', content: prompt }],
       model: !isCheapTask? keyValt.OPENAI_BASE_MODEL : 'gpt-3.5-turbo',

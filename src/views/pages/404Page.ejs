@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found | Atakan Gül Blog</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.0.0/dist/full.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex flex-col min-h-screen bg-base-200 justify-middle align-contents-center">
+
+    <div class="flex-grow flex items-center justify-center align-contents-center" style="display: flex; justify-content: center !important; align-items: center !important; height: 100% !important;">
+        <div class="text-center ">
+            <h1 class="text-5xl font-bold mb-4">404 - Page Not Found</h1>
+            <p class="text-xl mb-6">The page you're looking for doesn't exist.</p>
+            <p class="text-lg mb-8">You will be redirected to the home page in <span id="countdown" class="font-bold text-primary">60</span> seconds.</p>
+            <a href="/" class="ui large yellow button">Go to Home Page</a>
+        </div>
+    </div>
+
+    <script>
+        let count = 60;
+        const countdownElement = document.getElementById('countdown');
+        const countdownInterval = setInterval(() => {
+            count--;
+            countdownElement.textContent = count;
+            if (count <= 0) {
+                clearInterval(countdownInterval);
+                window.location.href = '/';
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
