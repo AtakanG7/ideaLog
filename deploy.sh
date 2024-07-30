@@ -22,7 +22,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Trigger deployment on Render
-wget -qO- 
+wget -qO- https://api.render.com/deploy/srv-cqg5sbdds78s73c96g4g?key=peJH_uPxtBE
 if [ $? -ne 0 ]; then
     echo "Error: Render deployment trigger failed."
     exit 1

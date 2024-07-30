@@ -1,7 +1,7 @@
-import config from '../config/config.js';
-const keyVault = new config();
-
 document.addEventListener('DOMContentLoaded', function() {
+    loadImages();
+    loadTheme();
+
     const allButtons = document.querySelectorAll('.searchBtn');
     const searchBar = document.querySelector('.searchBar');
     const searchInput = document.getElementById('searchInput');
@@ -33,13 +33,12 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   
-    onload = loadImages;
-    loadTheme();
+  
 });
   
 // Global functions
 fetchImage = async function(query, postContainerId) {
-  const url = `https://pixabay.com/api/?key=${keyVault.PIXEBAY_API_KEY}&q=${query.toLowerCase()}&image_type=photo&editors_choice=true`;
+  const url = `https://pixabay.com/api/?key=34782797-09ed0e53aefea1bdbbcccd6f0&q=${query.toLowerCase()}&image_type=photo&editors_choice=true`;
 
   try {
     const response = await fetch(url);
@@ -103,7 +102,9 @@ closeSearchBar = function() {
   searchBar.style.display = 'none';
   document.getElementById('searchInput').value = '';
 }
-  
+
+
+
 function getProfileInfo() {
   fetch('/users/')
     .then(res => res.json())

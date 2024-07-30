@@ -105,7 +105,7 @@
           <% data.forEach(post => { %>
             <div class="item">
               <div class="ui tiny image rounded" style="min-width: 160px !important; object-fit: cover;">
-                <img class="rounded" style="border-radius: 10px; object-fit: cover; max-height: 120px !important;" src="<%= post.imageURL %>" alt="<%= post.title %>" loading="lazy">
+                <img id="post-<%= post._id %>" class="rounded" style="border-radius: 10px; object-fit: cover; max-height: 120px !important;" src="<%= post.imageURL %>" alt="<%= post.title %>" loading="lazy">
               </div>
               <div class="content">
                 <a href="/blogs/<%= post.url %>" class="header"><%= post.title %></a>
@@ -136,43 +136,9 @@
       </div>
 
       <script>
-        async function fetchImage(query, postContainerId) {
-          const url = `https://pixabay.com/api/?key=34782797-09ed0e53aefea1bdbbcccd6f0&q=${query.toLowerCase()}&image_type=photo&editors_choice=true`;
-
-          try {
-            const response = await fetch(url);
-            const data = await response.json();
-
-            if (data.hits && data.hits.length > 0) {
-              const imageUrl = data.hits[1].webformatURL;
-              document.querySelector(`#${postContainerId}`).src = imageUrl;
-            } else {
-              console.error("No images found.");
-            }
-          } catch (error) {
-            console.error("Error fetching image:", error);
-          }
-        }
-        async function loadImages() {
-          const data = <%- JSON.stringify(data) %>;
-          for (const post of data) {
-            const keywords = post.search_keywords.split(' ')[0] + ' ' + post.search_keywords.split(' ')[1];
-            await fetchImage(keywords, `post-${post._id}`);
-          }
-        }
-
-        window.onload = () => {
-          loadImages();
-        };
-        
-        scrollToElement = () => {
-          const element = document.querySelector('#scroll-place');
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
-          }
-        };
-
+        var data = <%- JSON.stringify(data) %>;
       </script>
-      
+      <script type="text/javascript" src="/js/script.js"></script>
+
   </body>
 </html>

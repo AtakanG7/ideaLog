@@ -13,7 +13,7 @@
     <% recommendations.forEach(post => { %>
       <div class="item">
         <div class="ui tiny image rounded" style="min-width: 160px !important; object-fit: cover;">
-          <img class="rounded" style="border-radius: 10px; object-fit: cover; max-height: 120px !important;" class="custom-image" src="<%= post.imageURL %>" alt="<%= post.title %>" loading="lazy">
+          <img  id="post-<%= post._id %>" class="rounded" style="border-radius: 10px; object-fit: cover; max-height: 120px !important;" class="custom-image" src="<%= post.imageURL %>" alt="<%= post.title %>" loading="lazy">
         </div>
         <div class="content">
           <a href="/blogs/<%= post.url %>" class="header"><%= post.title %></a>
@@ -113,7 +113,6 @@
     })
       .then(response => response.json())
       .then(data => {
-        console.log(data)
         if(data.data.length < 3) {
           loading.style.display = 'none';
           noMoreBlogs.style.display = 'block';
@@ -123,7 +122,7 @@
           const blogPostHTML = `
             <div class="item">
               <div class="ui tiny image rounded " style="min-width: 160px !important; object-fit: cover;">
-                <img style="border-radius: 10px; object-fit: cover; max-height: 120px !important" class="custom-image" id="${post._id}" src="${post.imageURL}" alt="${post.title}" loading="lazy">
+                <img id="post-${post._id}" style="border-radius: 10px; object-fit: cover; max-height: 120px !important" class="custom-image" id="${post._id}" src="${post.imageURL}" alt="${post.title}" loading="lazy">
               </div>
               <div class="content">
                 <a href="/blogs/${post.url}" class="header">${post.title}</a>
@@ -147,6 +146,7 @@
           blogPostsContainer.insertAdjacentHTML('beforeend', blogPostHTML);
         });
         offset += 3;
+        
       });
   }
 
