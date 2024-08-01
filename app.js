@@ -101,9 +101,12 @@ app.use('/', indexRouter)
 app.use('/blogs', blogRouter)
 app.use('/users', userRouter)
 app.use('/images', imageRouter)
+
+// Setting up 404 page
 app.use('/*', function(req, res) {
   res.render('./pages/404Page.ejs')
 })
+
 // Fetch images from MongoDB
 restoreUploadsFolder()
 
