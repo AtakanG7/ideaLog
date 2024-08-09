@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myworkflow
+  labels:
+    app: myworkflow
+    kubernetes.azure.com/generator: devhub
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myworkflow
+  template:
+    metadata:
+      labels:
+        app: myworkflow
+    spec:
+      containers:
+        - name: myworkflow
+          image: atakan1927.azurecr.io/atakan1927:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
