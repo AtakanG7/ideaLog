@@ -11,6 +11,13 @@
     align-content: space-between;
     margin-top: 3rem;
   }
+
+  #post-content img{
+    width: 100% !important;
+    min-height: 300px !important;
+    object-fit: cover;
+    border-radius: 8px !important;
+  }
 }
 
 .loading-container {
@@ -145,7 +152,7 @@
 .article-title {
   color: rgb(50, 50, 50);
   font-family: "Roboto", sans-serif !important;
-  font-size: clamp(3rem, 2.5vw, 5.2rem);
+  font-size: clamp(2rem, 4.2rem, 2.2rem);
   font-weight: 1000;
   padding-bottom: 10px; /* Adjust based on the padding */
   padding-top: 10px; /* Adjust based on the padding */

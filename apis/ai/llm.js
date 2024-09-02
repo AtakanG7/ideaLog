@@ -103,17 +103,17 @@ async function startAIPostCreation(query) {
       return;
     }
 
-    const promptDirectives = `You are an experienced professional blogger with a unique, playful sense of humor. Your blog posts are characterized by:
+    const promptDirectives = `You are an expert blogger with a playful sense of humor. Your blog posts are known for:
 
-      Simple, conversational language that avoids jargon and complex words
-      Highly engaging writing with plenty of witty, humorous phrasing
-      Short, punchy sentences that keep the reader's interest
-      An irreverent, fun tone that gently pokes fun at the subject matter while still remaining good-natured
+        - Simple, conversational language that avoids jargon and complex terms
+        - Engaging writing with witty, humorous phrasing
+        - Short, punchy sentences that maintain reader interest
+        - A fun, irreverent tone that gently pokes fun at the subject matter
 
-      Your goal is to take potentially dry or boring topics and make them incredibly entertaining to read through your clever writing style. You have a knack for injecting excitement and hilarity into the most mundane subjects.
-      Rather than just dryly stating facts, you want to tell an amusing story or narrative around the topic. Don't be afraid to be bold with your humor - the more outrageous the better, as long as it's all in good fun. Just be sure to keep things relatively family-friendly without veering into offensiveness.
-      The end result should be blog posts that are an absolute joy to read from start to finish, leaving the reader entertained, enlightened and eager to read more of your wonderfully amusing work. Aim for posts of at least 500 words that really allow you to flex your comedic writing chops.`
+        Your task is to take complex or dry articles and transform them into entertaining and accessible blog posts. Instead of just presenting facts, weave an amusing story or narrative around the topic. Use bold, family-friendly humor to make even the most mundane subjects enjoyable to read.
 
+        Aim for a blog post of at least 500 words that captivates and entertains, leaving readers eager for more of your witty and delightful content. Here's the complex data you need to work with: ${complexData}
+    `;
     
     const expectedOutputFormat = `{
       "1": {
@@ -135,27 +135,21 @@ async function startAIPostCreation(query) {
 
     // Blog Post Content
     const blogPostContent = await getAICreatedBlogPost(promptDirectives, expectedOutputFormat, articles);
-    sendTelegramMessage('Blog Post Content:\n' + blogPostContent);
     
     // Blog Post Title
     const blogPostTitle = await getBlogPostTitle(blogPostContent);
-    sendTelegramMessage('Blog Post Title:\n' + blogPostTitle);
 
     // Blog Post webFriendlyURL
     const webFriendlyURL = await getBlogPostURL(blogPostTitle);
-    sendTelegramMessage('Blog Post webFriendlyURL:\n' + webFriendlyURL);
 
     // Blog Post Description
     const blogPostDescription = await getBlogPostDescription(blogPostContent);
-    sendTelegramMessage('Blog Post Description:\n' + blogPostDescription);
     
     // Important Keywords
     let importantKeywords = await getImportantKeywords(blogPostContent);
-    sendTelegramMessage('Important Keywords:\n' + importantKeywords);
 
     importantKeywords += blogPostTitle + blogPostDescription + blogPostContent;
 
-    sendTelegramMessage('Important Keywords:\n' + importantKeywords);
     return ({
       url: webFriendlyURL,
       title: blogPostTitle,
@@ -183,23 +177,21 @@ async function startUserPostCreation(content) {
     
     // Blog Post Title
     const blogPostTitle = await getBlogPostTitle(blogPostContent);
-    sendTelegramMessage('Blog Post Title:\n' + blogPostTitle);
+    
+    // Shorten the URL for seo friendly URLs
+    const shorterURL = await getShorterURL(blogPostTitle);
 
     // Blog Post webFriendlyURL
-    const webFriendlyURL = getBlogPostURL(blogPostTitle);
-    sendTelegramMessage('Blog Post webFriendlyURL:\n' + webFriendlyURL);
+    const webFriendlyURL = getBlogPostURL(shorterURL);
 
     // Blog Post Description
     const blogPostDescription = await getBlogPostDescription(blogPostContent);
-    sendTelegramMessage('Blog Post Description:\n' + blogPostDescription);
     
     // Important Keywords
     let importantKeywords = await getImportantKeywords(blogPostContent);
-    sendTelegramMessage('Important Keywords:\n' + importantKeywords);
 
     importantKeywords += blogPostTitle + blogPostDescription + blogPostContent;
 
-    sendTelegramMessage('Important Keywords:\n' + importantKeywords);
     return ({
       url: webFriendlyURL,
       title: blogPostTitle,
@@ -232,9 +224,17 @@ async function getAICreatedBlogPost(directives ,articles, expectedOutputFormat, 
 
   // Blog Post Generation
   const blogPost = await sendToLLM(prompt, isCheapTask);
-  sendTelegramMessage('Gnerated Blog Post:\n' + blogPost);
 
   return blogPost;
+}
+
+async function getShorterURL(longURL, isCheapTask = false) {
+  const prompt = `You are a URL shortener. Given a long URL, generate three concise, SEO-friendly keywords separated by spaces. For example, if the long URL is "How to Setup CI/CD Pipeline Using Azure DevOps for AKS," the shortened URL should be "Azure DevOps CICD" Here is the long URL: ${longURL}`;
+
+  const shorterURL = await sendToLLM(prompt, isCheapTask);
+  sendTelegramMessage('Shorter URL:\n' + shorterURL);
+
+  return shorterURL;
 }
 
 async function getImportantKeywords(content, isCheapTask = true) {
@@ -257,7 +257,6 @@ async function getImportantKeywords(content, isCheapTask = true) {
     `
 
     const keywords = await sendToLLM(prompt, isCheapTask);
-    sendTelegramMessage('keywords from Blog Post:\n' + keywords);
 
     return keywords;
   } catch (error) {
@@ -273,18 +272,17 @@ async function getBlogPostDescription(content, isCheapTask = true) {
     const prompt = `You are a description generator. Given the content, in html format or plain text please generate 
     a friendly short and logical description from the content. The most important thing here is that the description must be SEO 
     friendly. This description will be take place in web pages to showcase the content of the blog post. Create content focused
-    description.
+    description. Keep it very short and descriptive (This is important for SEO).
     content: ${content}
     you description:
     `;
 
     const description = await sendToLLM(prompt, isCheapTask);
-    sendTelegramMessage('description from Blog Post:\n' + description);
 
     return description;
   } catch (error) {
     console.error('Error description generating blog post:', error);
-    sendTelegramMessage('Error generating blog post description:\n' + error);
+    sendTelegramMessage('Error generating blog desription:\n' + error);
     return null;
   }
 };
@@ -299,7 +297,6 @@ async function getBlogPostTitle(content, isCheapTask = true) {
     Now determine the best title according to the content. Make it short!`;
 
     const title = await sendToLLM(prompt, isCheapTask);
-    sendTelegramMessage('title from Blog Post:\n' + title);
 
     return title;
   } catch (error) {
