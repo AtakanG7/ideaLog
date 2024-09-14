@@ -18,30 +18,24 @@ class authControllerMiddlewares{
         async mustAuthenticated(req, res, next) {
             try {
                 
-                // Check if cookie is present
                 if (!req.cookies.authToken) {
                     return res.status(401).redirect('/login');
                 }
 
-                // Get the JWT token from the cookie
                 const token = req.cookies.authToken;
-                // If the token is not present, return a 401 Unauthorized error
                 if (!token) {
                     return res.status(401).redirect('/login');
                 }
             
                 jwt.verify(token, keyValt.SECRET_KEY);
             
-                // If the user is authenticated, call the next middleware function
                 return next();
             } catch (err) {
-                // If there's an error (e.g., invalid token, expired token), handle it
                 sendTelegramMessage(`[Error] ${err.message}`);
                 res.status(500).redirect('/login');
             }
         }
         
-        // Checks if user is admin
         async mustBeAdmin(req, res, next) {
             try {
                 // Check if cookie is present
@@ -49,29 +43,21 @@ class authControllerMiddlewares{
                     return res.status(401).redirect('/login');
                 }
                 
-                // Get the JWT token from the cookie
                 const token = req.cookies.authToken;
 
-                // If the token is not present, return a 401 Unauthorized error
                 if (!token) {
                     return res.status(401).redirect('/login');
                 }
                 
-                // Decode the JWT and verify the JWT
                 const decoded = jwt.verify(token, keyValt.SECRET_KEY);
 
-                // Check if the user's role is 'admin'
                 if (decoded.role === 'admin') {
-                    // Set it in res locals
                     res.locals.isAdmin = true;
-                    // If the user is an admin, call the next middleware function
                     return next();
                 } else {
-                    // If the user is not an admin, return a 403 Forbidden error
                     return res.redirect('/login');
                 }
             } catch (err) {
-                // If there's an error (e.g., invalid token, expired token), handle it
                 sendTelegramMessage(`[Error] ${err.message}`);
                 res.status(500).redirect('/login');
             }
@@ -80,27 +66,19 @@ class authControllerMiddlewares{
         async isAdmin(req, res) {
             try {
                 
-                // Check if cookie is present
                 if (!req.cookies.authToken) {
                     return false;
                 }
-                // Get the JWT token from the cookie
                 const token = req.cookies.authToken;
-                // If the token is not present, return a 401 Unauthorized error
                 if (!token) {
                     return false
                 }
-                // Verify the JWT
                 jwt.verify(token, keyValt.SECRET_KEY);
 
-                // Decode the jwt token
                 const decodedToken = jwt.decode(token);
                 
-                // Check if the user's role is 'admin'
                 return decodedToken.role === 'admin';
             } catch (err) {
-                console.log("not authenticated")
-                // If there's an error (e.g., invalid token, expired token), return false
                 return false;
             }
         }
@@ -113,23 +91,17 @@ class authControllerMiddlewares{
          */
         async isAuthenticated(req, res)     {
             try {
-                // Check if cookie is present
                 if (!req.cookies.authToken) {
                     return false;
                 }
-                // Get the JWT token from the cookie
                 const token = req.cookies.authToken;
-                // If the token is not present, return a 401 Unauthorized error
                 if (!token) {
                     return false
                 }
-                // Decode the JWT and verify the JWT
                 jwt.verify(token, keyValt.SECRET_KEY);
             
-                // If the token is valid, the user is authenticated
                 return true;
             } catch (err) {
-                // If there's an error (e.g., invalid token, expired token), return false
                 return false;
             }
         }
@@ -175,11 +147,8 @@ class authControllerMiddlewares{
                 
                 const sessionUUID = uuidv4();
                 const token = jwt.sign({ uuid: sessionUUID, role: user.role }, keyValt.SECRET_KEY, { expiresIn: '1h' });
-                // Store the token in an HTTP-only cookie
                 res.cookie('authToken', token, { httpOnly: true, maxAge: 3600000, overwrite: true }); // 1 hour
-                // Store the session UUID in Redis with the user ID as the value for 1 hour
                 await client.setEx(sessionUUID, 3600, String(user._id));
-                // Setting authenticated to true
                 req.session.isAuthenticated = true;
                 req.session.role = user.role;
 
@@ -195,36 +164,26 @@ class authControllerMiddlewares{
             return user;
         }   
         
-        // Get uuid from JWT and get hte user_id from Redis
         async getUserFromSession(req, res) {
             try {
-                // Get the JWT token from the cookie
                 const token = req.cookies.authToken;
-                // If the token is not present, return a 401 Unauthorized error
                 if (!token) {
                     return false
                 }
-                // Decode the JWT and verify the JWT
                 const decoded = jwt.verify(token, keyValt.SECRET_KEY);
-                // Get the session UUID
                 const sessionUUID = decoded.uuid;
-                // Get the user ID from Redis
                 const userId = await client.get(sessionUUID);
-                // If the user ID is not present, return a 401 Unauthorized error
                 if (!userId) {
                     return false
                 }
                
-                // Get the user from the database
                 const user = await Users.findOne({ _id: userId });
-                // If the user is not present, return a 401 Unauthorized error
                 if (!user) {
                     return false
                 }
                 
                 return user;
             } catch (err) {
-                // If there's an error (e.g., invalid token, expired token), handle it
                 sendTelegramMessage(`[Error] ${err.message}`);
                 res.status(500).json({ message: 'Internal Server Error' });
             }

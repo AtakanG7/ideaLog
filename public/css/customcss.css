@@ -1,4 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap');
+
 
 @media screen and (max-width: 768px) {
   .custom-image {
@@ -163,8 +166,8 @@
 }
 
 .article-subtitle{
-    font-family: "Roboto", sans-serif !important;
-    font-size: 20px; /* Adjust based on the font size */
+    font-family: 'Merriweather', serif !important;
+    font-size: 18px; /* Adjust based on the font size */
     color: #666666; /* Adjust based on the text color */
     line-height: 1.5; /* Adjust based on the line height */
     margin: 0; /* Adjust based on the margin */
@@ -236,8 +239,8 @@
 }
 
 .custom-font p{
-  font-family: "Roboto", sans-serif !important;
-  font-size: 20px;
+  font-family: 'Merriweather', serif !important;
+  font-size: 18px;
   line-height: 2.7rem !important;
   font-style: normal !important;
   overflow-wrap: break-word !important;
@@ -342,7 +345,7 @@
 .custom-font blockquote {
   border-left: 5px solid #F2F2F2;
   padding-left: 10px;
-  font-family: "Roboto", sans-serif !important;
+  font-family: 'Merriweather', serif !important;
   font-weight: 300 !important;
   font-size: 20px;
   line-height: 2.7rem !important;
@@ -358,14 +361,26 @@
 
 .ql-code-block-container {
   background-color: #F2F2F2 !important;
-  padding: 20px !important;
-  border-radius: 5px !important;
-  color: #000000 !important;
-  font-size: 20px !important;
-  line-height: 1.5 !important;
+  padding: 16px 20px !important;
+  border-radius: 6px !important;
+  color: #2C3E50 !important; /* Slightly darker color for better readability */
+  font-size: 13.5px !important; /* Slightly smaller for code feel */
+  line-height: 1.65 !important;
   overflow-x: auto !important;
-  white-space: pre-wrap !important;
+  white-space: pre !important;
+  font-family: 'Fira Code', monospace !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important; /* Softer shadow for depth */
+  border-left: 4px solid #268BD2 !important; /* Brighter accent for better visibility */
+  transition: background-color 0.3s ease, border-color 0.3s ease; /* Smooth hover transitions */
 }
+
+/* Optional hover effect */
+.ql-code-block-container:hover {
+  background-color: #E8E8E8 !important; /* Slight change on hover for interaction feedback */
+  border-left: 4px solid #FF8C00 !important; /* Brighter hover accent */
+}
+
+
 
 
 

@@ -12,6 +12,15 @@ const isAdmin = [authControllerMiddlewares.mustBeAdmin];
 // Using express router, creating specific routes
 const router = Router()
 
+router.get('/most-viewed', async (req, res) => {
+  const mostViewedPosts = await Blogs
+    .find({ status: 'published' })
+    .sort({ views: -1 })
+    .limit(3);
+
+  res.json(mostViewedPosts);
+});
+
 router.get("/recommendations", blogController.getNextPopularBlogs);
 
 router.get("/q", async (req, res) => {
@@ -21,7 +30,7 @@ router.get("/q", async (req, res) => {
   res.json(result);
 });
 
-router.get("/create", isAuth, (req, res) => {
+router.get("/create", isAdmin, isAuth, (req, res) => {
   res.render("./pages/blogPostPage", { currentRoute: `/blogs/creation` })
 });
 
@@ -62,9 +71,9 @@ router.get("/update/:id", isAuth, isAdmin, (req, res) => {
     res.render("./pages/blogEditPage", { id: Number(id), currentRoute: `/blogs/update/post_id-${id}` })
 });
 
-router.post("/", isAuth, blogController.createUserWrittenBlogs);
+router.post("/", isAuth, isAdmin, blogController.createUserWrittenBlogs);
 
-router.get("/new/blog/create", isAuth, (req, res) => {
+router.get("/new/blog/create", isAuth, isAdmin, (req, res) => {
   res.render("./pages/blogPostPage", { currentRoute: `/blogs/creation` })
 });
 
@@ -107,15 +116,6 @@ router.post('/like', async (req, res) => {
   blog.likes += 1;
   await blog.save();
   res.status(200).json({ success: true });
-});
-
-router.get('/most-viewed', async (req, res) => {
-  const mostViewedPosts = await Blogs
-    .find({ status: 'published' })
-    .sort({ views: -1 })
-    .limit(3);
-
-  res.json(mostViewedPosts);
 });
 
 export default router;
