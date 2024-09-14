@@ -12,6 +12,15 @@ const isAdmin = [authControllerMiddlewares.mustBeAdmin];
 // Using express router, creating specific routes
 const router = Router()
 
+router.get('/most-viewed', async (req, res) => {
+  const mostViewedPosts = await Blogs
+    .find({ status: 'published' })
+    .sort({ views: -1 })
+    .limit(3);
+
+  res.json(mostViewedPosts);
+});
+
 router.get("/recommendations", blogController.getNextPopularBlogs);
 
 router.get("/q", async (req, res) => {
@@ -109,14 +118,7 @@ router.post('/like', async (req, res) => {
   res.status(200).json({ success: true });
 });
 
-router.get('/most-viewed', async (req, res) => {
-  const mostViewedPosts = await Blogs
-    .find({ status: 'published' })
-    .sort({ views: -1 })
-    .limit(3);
 
-  res.json(mostViewedPosts);
-});
 
 export default router;
 
