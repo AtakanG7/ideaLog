@@ -30,7 +30,7 @@ router.get("/q", async (req, res) => {
   res.json(result);
 });
 
-router.get("/create", isAuth, (req, res) => {
+router.get("/create", isAdmin, isAuth, (req, res) => {
   res.render("./pages/blogPostPage", { currentRoute: `/blogs/creation` })
 });
 
@@ -71,9 +71,9 @@ router.get("/update/:id", isAuth, isAdmin, (req, res) => {
     res.render("./pages/blogEditPage", { id: Number(id), currentRoute: `/blogs/update/post_id-${id}` })
 });
 
-router.post("/", isAuth, blogController.createUserWrittenBlogs);
+router.post("/", isAuth, isAdmin, blogController.createUserWrittenBlogs);
 
-router.get("/new/blog/create", isAuth, (req, res) => {
+router.get("/new/blog/create", isAuth, isAdmin, (req, res) => {
   res.render("./pages/blogPostPage", { currentRoute: `/blogs/creation` })
 });
 
@@ -117,8 +117,6 @@ router.post('/like', async (req, res) => {
   await blog.save();
   res.status(200).json({ success: true });
 });
-
-
 
 export default router;
 
