@@ -21,6 +21,12 @@
     object-fit: cover;
     border-radius: 8px !important;
   }
+
+  @media screen and (max-width: 480px) {
+    #post-content img{
+      object-fit: contain;
+    }
+  }
 }
 
 .loading-container {
@@ -271,7 +277,8 @@
   font-family: "Roboto", sans-serif !important;
   font-weight: 600 !important;
   color: rgb(50, 50, 50);
-  font-size: 1.5rem;
+  font-size: 1.9rem;
+  margin-bottom: 10px;
 }
 
 .custom-font h4 {
