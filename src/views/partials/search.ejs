@@ -74,7 +74,6 @@
       {
         const timer = setTimeout(() => {
           sent = true
-          console.log('sent')
           fetchArticales();
         }, 1000);
         clearTimeout(timer);
@@ -89,7 +88,6 @@
   async function fetchArticales() {
     const response = await fetch(`/blogs/q?q=${searchInput.value}`);
     const data = await response.json();
-    console.log(data)
     sent = false;
     // display the results in the content div
     document.getElementById('searchBar').style.display = 'block';
