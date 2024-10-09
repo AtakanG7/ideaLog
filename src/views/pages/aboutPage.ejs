@@ -88,16 +88,7 @@
                 Stay in the Loop
             </h2>
             <p class="text-xl mb-6">Want to keep up with the latest in tech? Subscribe for fresh insights delivered straight to your inbox!</p>
-            <div class="ui container my-4 py-4">
-                <form class="flex justify-center form-custom" action="/users/subscribe/" method="post">
-                    <div class="ui action input m-0 p-0" style="border: 2px solid #FFD700; border-radius: 5px; overflow: hidden;">
-                      <input type="email" placeholder="<%= user.email %>" value="<%= user.email %>" name="email" id="email" style="width: 17rem; border: none; padding: 10px;" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
-                      <button class="ui button yellow text-dark" style="padding: 10px 20px;">
-                        <i class="fas fa-paper-plane mr-2"></i>Subscribe
-                      </button>
-                    </div>
-                </form>
-            </div>
+            <%- include('../partials/subscribe.ejs') %>
         </section>
     </main>
 </body>

@@ -64,16 +64,8 @@
           </div>
         <% } %>
       </div>
-
-      <% if (!user.isSubscribed) { %>
-        <div class="ui container my-4 py-4">
-          <form class="flex justify-center form-custom" action="/users/subscribe/" method="post">
-              <div class="ui action input m-0 p-0" style="border: 2px solid #FFD700; border-radius: 5px;">
-                <input type="email" placeholder="<%= user.email %>" value="<%= user.email %>" name="email" id="email" style="width: 17rem;" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
-                <button class="ui button yellow text-dark">Subscribe</button>
-              </div>
-          </form>
-        </div>
+      <% if (user && !user.isSubscribed) { %>
+        <%- include('../partials/subscribe.ejs') %>
       <% } %>
 
       <%- include('../partials/latestBlogs.ejs', {data: data}) %>

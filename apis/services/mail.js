@@ -1,8 +1,9 @@
 import nodemailer from 'nodemailer';
 import Config from '../../config/config.js'; // Configuration file
-import { Blogs } from '../../src/models/blogs.js';
+import client from '../db/redis.js';
 import axios from 'axios';
 import { sendTelegramMessage } from '../services/telegram.js';
+
 // Initializing the configuration file
 const keyValt = new Config();
 
@@ -54,24 +55,60 @@ export const sendEmail = async (mailOptions) => {
   }
 };
 
-// A function to subscribe people to the newsletter
 export const subscribeToNewsletter = async (req, res) => {
   try {
-    const email = req.body.email;
-    const url = `https://api.brevo.com/v3/contacts`;
+    const { email, verificationId } = req.body;
 
+    // Input validation
+    if (!email || !verificationId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and verification ID are required.',
+      });
+    }
+
+    let verificationBody;
+    try {
+      verificationBody = await client.get(verificationId);
+      if (!verificationBody) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid or expired verification.',
+        });
+      }
+      verificationBody = JSON.parse(verificationBody);
+    } catch (error) {
+      console.error('Error retrieving or parsing verification:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Internal server error.',
+      });
+    }
+
+    if (!verificationBody.success) {
+      return res.status(400).json({
+        success: false,
+        message: 'Verification failed. Please try again.',
+      });
+    }
+
+    // Check if already subscribed
+    if (await isEmailInContacts(email)) {
+      return res.render('pages/successPage', { 
+        message: 'You are already subscribed, keep an eye on your inbox!', 
+        user: { email }, 
+        isUnsubscription: false 
+      });
+    }
+
+    // Subscribe to Brevo
+    const url = 'https://api.brevo.com/v3/contacts';
     const payload = {
-      email: email,
+      email,
       updateEnabled: true,
-      listIds: [keyValt.BREVO_LIST_ID], 
+      listIds: [keyValt.BREVO_LIST_ID],
       attributes: { EMAIL: email },
     };
-
-    
-    if(await isEmailInContacts(email)){
-      res.render('pages/successPage', { message: 'You are already subscribed, keep an eye on your inbox!', user: {email:email}, isUnsubscription: false });
-      return
-    }
 
     await axios.post(url, payload, {
       headers: {
@@ -80,6 +117,7 @@ export const subscribeToNewsletter = async (req, res) => {
       },
     });
 
+    // Send confirmation email
     const mailOptions = {
       from: "Atakan's Blog <no-reply@atakangul.com>",
       to: email,
@@ -89,15 +127,32 @@ export const subscribeToNewsletter = async (req, res) => {
 
     await sendEmail(mailOptions);
 
-    res.render('pages/successPage', { message: 'Congratulation! You have successfully subscribed to our newsletter!', user: {email:email}, isUnsubscription: false });
+    // Set security headers
+    res.set({
+      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+      'X-Frame-Options': 'DENY',
+      'X-Content-Type-Options': 'nosniff',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+    });
+
+    return res.render('pages/successPage', { 
+      message: 'Congratulations! You have successfully subscribed to our newsletter!', 
+      user: { email }, 
+      isUnsubscription: false 
+    });
 
   } catch (error) {
+    console.error('Error subscribing to newsletter:', error);
     if (error.response && error.response.status === 400) {
-      console.error('Email already subscribed:', email);
-    } else {
-      console.error('Error subscribing to newsletter:', error);
-      throw error;
+      return res.status(400).json({
+        success: false,
+        message: 'Email already subscribed or invalid.',
+      });
     }
+    return res.status(500).json({
+      success: false,
+      message: 'An error occurred while processing your request.',
+    });
   }
 };
 

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscribe Form</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <style>
+        .form-custom {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .form-custom > * {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="ui container my-4 py-4">
+        <form id="subscribeForm" class="flex justify-center form-custom flex-column" action="/users/subscribe/" method="post">
+            <div class="ui action input m-0 p-0" style="border: 2px solid #FFD700; border-radius: 5px; overflow: hidden;">
+                <input 
+                    type="email" 
+                    placeholder="<%= user.email %>" 
+                    value="<%= user.email %>" 
+                    name="email" 
+                    id="email" 
+                    style="width: 17rem; border: none; padding: 10px;" 
+                    required
+                >
+                <input id="verificationId" name="verificationId" type="hidden" value="false">
+                <button type="submit" class="ui button yellow text-dark" style="padding: 10px 20px;">
+                    <i class="fas fa-paper-plane mr-2"></i>Subscribe
+                </button>
+            </div>
+            <div class="cf-turnstile" data-sitekey="0x4AAAAAAAxGmcDVTClpwzCZ" data-callback="onTurnstileSuccess"></div>
+        </form>
+    </div>
+
+    <script>
+        let turnstileToken = null;
+
+        function onTurnstileSuccess(token) {
+            console.log('Turnstile token:', token);
+            turnstileToken = token;
+        }
+
+        document.getElementById('subscribeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            console.log('1. Form submitted');
+
+            if (!turnstileToken) {
+                console.log('2. Turnstile token is null, showing alert');
+                alert('Please complete the Turnstile challenge.');
+                return;
+            }
+
+            const email = document.getElementById('email').value;
+
+            console.log('3. Turnstile token:', turnstileToken);
+
+            try {
+                console.log('4. Fetching /users/validate');
+                const response = await fetch('/users/validate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        'cf-turnstile-response': turnstileToken
+                    })
+                });
+
+                if (response.status === 404) {
+                    console.error('6. Endpoint not found: /users/validate');
+                    alert('The validation service is not available. Please contact the site administrator.');
+                    return;
+                }
+
+                const result = await response.json();
+                console.log('7. Validation result:', result);
+                
+                if (result.success) {
+                    console.log('8. Validation successful, submitting form');
+                    document.getElementById('verificationId').value = result?.verificationId;
+                    console.log(this);
+                    this.submit();
+                } else {
+                    console.log('9. Validation failed');
+                    alert('Turnstile validation failed. Please try again.');
+                    turnstile.reset();
+                }
+            } catch (error) {
+                console.error('10. Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        });
+    
+    </script>
+</body>
+</html>
