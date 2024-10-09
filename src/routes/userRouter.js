@@ -20,4 +20,6 @@ router.post("/unsubscribe", userController.unsubcribeFromNewsletter);
 
 router.get("/", userController.getProfile);
 
+router.post("/validate", userController.validateUser);
+
 export default router;

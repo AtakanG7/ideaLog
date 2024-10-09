@@ -36,6 +36,69 @@
         }
       }
     </script>
+    <style>
+      .fullscreen-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+      }
+      .fullscreen-image {
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+      }
+      .close-button {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        color: white;
+        font-size: 30px;
+        cursor: pointer;
+      }
+      .image-container {
+        position: relative;
+        cursor: pointer;
+      }
+      .image-container::after {
+        content: '🔍';
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background-color: rgba(255, 255, 255, 0.7);
+        padding: 5px;
+        border-radius: 50%;
+      }
+      .skeleton {
+        animation: skeleton-loading 1s linear infinite alternate;
+      }
+      @keyframes skeleton-loading {
+        0% {
+          background-color: hsl(200, 20%, 80%);
+        }
+        100% {
+          background-color: hsl(200, 20%, 95%);
+        }
+      }
+      .toast {
+        z-index: 1001;
+      }
+      .comment-form {
+        margin-bottom: 20px;
+      }
+      .comment {
+        transition: background-color 0.3s ease;
+      }
+      .comment:hover {
+        background-color: #f8f9fa;
+      }
+    </style>
   </head>
 <body>
   <% if (isAdmin) { %>  
@@ -46,7 +109,7 @@
     <%- include('../partials/headers/headerUnAuth.ejs') %>
   <% } %>
 
-  <div class="container-fluid" style="max-width: 680px; word-break: break-all; line-height: 40px;">
+  <div class="container-fluid" style="max-width: 850px; word-break: break-all;">
     <div class="flex w-100">
       <button class="btn btn-ghost btn-outline text-base-content normal-case text-xl flex ms-auto px-10 py-0 m-1" style="width: fit-content;" onclick="window.location.href='/'">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left">
@@ -56,12 +119,8 @@
       </button>
     </div>
     <div class="row mt-3">
-      <h1 class="article-title "><%= data.title %></h1>
-      <% if (data.description.length > 200) { %>
-        <h2 class="article-subtitle"><%= data.description.slice(0, 200)%> <span role="button" class="font-semibold text-dark-800 bg-dark-100 rounded-full dark:text-dark-400">continue reading...</span></h2>
-      <% } else { %>
-        <h2 class="article-subtitle"><%= data.description %></h2>
-      <% } %>
+      <h1 class="article-title"><%= data.title %></h1>
+      <h2 class="article-subtitle"><%= data.description.length > 200 ? data.description.slice(0, 200) + '...' : data.description %></h2>
       <div class="flex items-center space-x-4 mt-4">
         <div class="avatar rounded-full overflow-hidden" style="width: 40px; height: 40px;">
           <img src="<%= data.authorMetadata.avatarURL || '/img/user.png' %>" alt="Avatar" class="w-full h-full object-cover">
@@ -85,14 +144,16 @@
         </div>
         <div class="sharethis-inline-share-buttons"></div>
       </div>
-      <div class="divider p-0 mb-1 px-4" ></div>
+      <div class="divider p-0 mb-1 px-4"></div>
 
       <% const contents = JSON.parse(data.content); %>
       
       <% if(data.AICreated) { %>
         <% for (const [key, value] of Object.entries(contents)) { %>
           <div class="mb-8 px-2 article-content-container" id="<%= value.title %>">
-            <img src="<%= value.image_url || '' %>" id="post-<%= key %>" class="rounded-t-lg w-100 mb-5 p-2 skeleton" alt="<%= value.title %>" />
+            <div class="image-container">
+              <img src="<%= value.image_url || '' %>" id="post-<%= key %>" class="rounded-t-lg w-100 mb-5 p-2 skeleton" alt="<%= value.title %>" onclick="openFullscreen(this)" />
+            </div>
             <h1 class="text-2xl font-bold mb-2"><%= value.title %></h1>
             <div class="mb-4 text-lg" style="font: 300; font-size: 20px; line-height: 35px;">
               <%- value.content %>
@@ -112,9 +173,8 @@
         <% } %>
       <% } %>
 
-      <div class="card bg-bfase-100 shadow-xl mt-5">
+      <div class="card bg-base-100 shadow-xl mt-5">
         <div class="card-body m-1 p-1">
-
           <div class="container px-1 pt-5">
             <h1 class="text-2xl"><%= data.title %></h1> 
             <div class="mb-0">
@@ -122,7 +182,7 @@
                 weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
               }) %></strong></small>
             </div>
-            <div class="mt-3">
+            <div class="mt-3 gap-2 flex flex-wrap flex-direction-row">
               <% data.search_keywords.split(",").slice(0,7).forEach((key) => { %>
                 <% if (!(key.length > 50)) { %>
                   <a href="/blogs/search?q=<%= encodeURIComponent(key) %>" class="ui tag label"><%= key %></a>
@@ -148,7 +208,7 @@
             </div>
           </div>
       
-          <div class="flex items-center justify-center gap-3">
+          <div class="flex items-center justify-center gap-3 mt-4">
             <div class="flex items-center">
               <button onclick="likePost()" class="btn btn-ghost btn-circle" title="Clap count">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -176,9 +236,9 @@
             </div>
           </div>
 
-          <div class="mt-4">
+          <div class="mt-4 comment-form">
             <textarea class="textarea textarea-bordered w-full" placeholder="Leave a comment"></textarea>
-            <button onclick="postComment()" class="btn btn-ghost mt-2">Post Comment</button>
+            <button onclick="postComment()" class="btn btn-primary mt-2">Post Comment</button>
           </div>
 
           <div class="mt-4 px-2">
@@ -186,8 +246,8 @@
             <div class="mt-2" id="comments-container">
               <% if (comments.length > 0) { %>
                 <% comments.forEach(comment => { %>
-                  <div class="w-full">
-                    <div class="grid comment">
+                  <div class="w-full comment">
+                    <div class="grid">
                       <div class="flex gap-2.5 mb-4">
                         <img src="/img/avatar.webp" alt="User image" class="w-11 h-11 rounded-full">
                         <div class="grid w-100">
@@ -211,7 +271,7 @@
                   </div>
                 <% }) %>
               <% } else { %>
-                <div class="flex justify-center items-center py-4">
+                <div class="flex justify-center items-center py-4" id="no-comments">
                   <i class="bi bi-chat-text-right-fill text-gray-500 mr-2"></i>
                   <p class="text-gray-500">No comments yet.</p>
                 </div>
@@ -231,8 +291,12 @@
     </div>
   </div>
 
+  <div class="fullscreen-overlay" id="fullscreen-overlay">
+    <span class="close-button" onclick="closeFullscreen()">&times;</span>
+    <img src="" alt="Fullscreen image" class="fullscreen-image" id="fullscreen-image">
+  </div>
+
   <script>
-    
     let isShowingAll = false;
     
     function toggleContent() {    
@@ -241,13 +305,7 @@
         subtitle.textContent = <%- JSON.stringify(data.description) %>;
       } else {
         const description = <%- JSON.stringify(data.description) %>;
-        const slice = description.slice(0, 200);
-        const continueReading = document.createElement('span');
-        continueReading.role = 'button';
-        continueReading.classList.add('font-semibold', 'text-dark-800', 'bg-dark-100', 'rounded-full', 'dark:text-dark-400');
-        continueReading.textContent = ' continue reading...';
-        subtitle.innerHTML = slice + ' ';
-        subtitle.appendChild(continueReading);
+        subtitle.textContent = description.length > 200 ? description.slice(0, 200) + '...' : description;
       }
       isShowingAll = !isShowingAll;
     }
@@ -255,18 +313,23 @@
     document.querySelector('.article-subtitle').addEventListener('click', toggleContent);
 
     function likePost() {
-        fetch('/blogs/like', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ _id: '<%= data._id %>' })
-        })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            document.querySelector('.clap').textContent = Number(document.querySelector('.clap').textContent) + 1;
-          }
-        })
-      }
+      fetch('/blogs/like', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ _id: '<%= data._id %>' })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          const clapElement = document.querySelector('.clap');
+          clapElement.textContent = Number(clapElement.textContent) + 1;
+          showNotification("Thanks for liking the post!");
+        }
+      })
+      .catch(error => {
+        showNotification("Failed to like the post. Please try again.");
+      });
+    }
 
     async function postComment() {
       const comment = document.querySelector('.textarea').value.trim();
@@ -304,6 +367,7 @@
 
     function showNotification(message) {
       document.getElementById('notification-message').textContent = message;
+      const notification = document.getElementById('notification');
       notification.style.display = 'block';
       setTimeout(() => notification.style.display = 'none', 5000);
     }
@@ -311,10 +375,10 @@
     function addCommentToDOM(comment) {
       const commentBox = document.getElementById('comments-container');
       const commentHTML = `
-        <div class="w-full">
-          <div class="grid comment">
+        <div class="w-full comment">
+          <div class="grid">
             <div class="flex gap-2.5 mb-4">
-              <img src="/img/avatar.webp" alt="User avatar" class="w-10 h-11">
+              <img src="/img/avatar.webp" alt="User avatar" class="w-11 h-11 rounded-full">
               <div class="grid w-100">
                 <h5 class="text-gray-900 text-sm font-semibold leading-snug pb-1">${comment.authorName}</h5>
                 <div class="w-max grid w-100">
@@ -338,7 +402,7 @@
       commentBox.insertAdjacentHTML('beforeend', commentHTML);
       
       const noComments = document.getElementById('no-comments');
-      if (noComments) noComments.style.display = 'none';
+      if (noComments) noComments.remove();
     }
   
     function stripHtml(html) {
@@ -354,12 +418,15 @@
         const response = await fetch(url);
         const data = await response.json();
         if (data.hits && data.hits.length > 0) {
-          document.getElementById(`${postContainerId}`).src = data.hits[0].webformatURL;
+          const img = document.getElementById(`${postContainerId}`);
+          img.src = data.hits[0].webformatURL;
+          img.classList.remove('skeleton');
         }
       } catch (error) {
-        
+        console.error('Error fetching image:');
       }
     }
+
     async function loadImages() {
       if(!<%- JSON.stringify(data.AICreated) %>){
         return;
@@ -373,11 +440,65 @@
     
     loadImages();
 
-    const scrollToElement = () => {
-      const element = document.querySelector('#scroll-place');
-      if (element) element.scrollIntoView({ behavior: 'smooth' });
-    };
-  
+    function openFullscreen(img) {
+      const overlay = document.getElementById('fullscreen-overlay');
+      const fullscreenImg = document.getElementById('fullscreen-image');
+      fullscreenImg.src = img.src;
+      overlay.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeFullscreen() {
+      const overlay = document.getElementById('fullscreen-overlay');
+      overlay.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeFullscreen();
+      }
+    });
+
+
+    function openFullscreen(img) {
+      const overlay = document.getElementById('fullscreen-overlay');
+      const fullscreenImg = document.getElementById('fullscreen-image');
+      fullscreenImg.src = img.src;
+      fullscreenImg.alt = img.alt;
+      overlay.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeFullscreen() {
+      const overlay = document.getElementById('fullscreen-overlay');
+      overlay.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+
+    // Add event listeners for fullscreen functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const images = document.querySelectorAll('.image-container img');
+      images.forEach(img => {
+        img.addEventListener('click', function() {
+          openFullscreen(this);
+        });
+      });
+
+      const overlay = document.getElementById('fullscreen-overlay');
+      overlay.addEventListener('click', function(event) {
+        if (event.target === this) {
+          closeFullscreen();
+        }
+      });
+    });
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeFullscreen();
+      }
+    });
+
   </script>
 </body>
 </html>
