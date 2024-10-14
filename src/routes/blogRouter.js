@@ -15,7 +15,7 @@ const router = Router()
 router.get('/most-viewed', async (req, res) => {
   const mostViewedPosts = await Blogs
     .find({ status: 'published' })
-    .sort({ views: -1 })
+    .sort({ publishedAt : -1})
     .limit(3);
 
   res.json(mostViewedPosts);

@@ -262,36 +262,48 @@
   font-family: "Roboto", sans-serif !important;
   font-weight: 900 !important;
   color: rgb(50, 50, 50);
-  font-size: 2.2rem;
+  font-size: 2.5rem;
+  margin-bottom: 0.5em;
 }
 
 .custom-font h2 {
   font-family: "Roboto", sans-serif !important;
   font-weight: 700 !important;
   color: rgb(50, 50, 50);
-  font-size: 1.8rem;
+  font-size: 2rem;
+  margin-bottom: 0.5em;
 }
 
 .custom-font h3 {
   font-family: "Roboto", sans-serif !important;
   font-weight: 600 !important;
   color: rgb(50, 50, 50);
-  font-size: 1.9rem;
-  margin-bottom: 10px;
+  font-size: 1.75rem;
+  margin-bottom: 0.5em;
 }
 
 .custom-font h4 {
   font-family: "Roboto", sans-serif !important;
   font-weight: 500 !important;
   color: rgb(50, 50, 50);
-  font-size: 1.2rem;
+  font-size: 1.5rem;
+  margin-bottom: 0.5em;
 }
 
 .custom-font h5 {
   font-family: "Roboto", sans-serif !important;
   font-weight: 400 !important;
   color: rgb(50, 50, 50);
+  font-size: 1.25rem;
+  margin-bottom: 0.5em;
+}
+
+.custom-font h6 {
+  font-family: "Roboto", sans-serif !important;
+  font-weight: 400 !important;
+  color: rgb(50, 50, 50);
   font-size: 1rem;
+  margin-bottom: 0.5em;
 }
 
 .custom-font ol {
