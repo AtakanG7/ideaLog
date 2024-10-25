@@ -1,6 +1,6 @@
 
 import jwt from "jsonwebtoken";
-import client from "../../../apis/db/redis.js";
+import redis from "../../../apis/db/redis.js";
 import Config from "../../../config/config.js";
 import { sendEmail } from "../../../apis/services/mail.js";
 import { sendTelegramMessage } from "../../../apis/services/telegram.js";
@@ -20,7 +20,7 @@ class verifyController{
     async verifyEmail(req, res) {
         try {
             // Get the verification code
-            const email = await client.get(req.query.verificationToken);
+            const email = await redis("GET", "{" + req.params.verificationId + "}");
     
             if (!email) {
                 return res.render('./pages/verificationFailuarePage.ejs', { message: 'Doğrulama kodu bulunamadı. Zaman aşımına uğradı.' });
@@ -37,7 +37,7 @@ class verifyController{
                 const decoded = jwt.verify(token, keyValt.SECRET_KEY);
                 if (decoded.uuid) {
                     // Get the user id from redis
-                    const userId = await client.get(decoded.uuid);
+                    const userId = await redis("GET", "{" + decoded.uuid + "}");
                     if (userId) {    
                         const user = await Users.findOne({ _id: userId });
                         if (user) {
